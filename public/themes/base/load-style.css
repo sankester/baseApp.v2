@@ -1,0 +1,7 @@
+/*import base*/
+@import url(assets/vendor_components/bootstrap/dist/css/bootstrap.min.css);
+@import url(assets/vendor_components/bootstrap/dist/css/bootstrap-extend.css);
+@import url(css/master_style_custom.css);
+@import url(css/skins/_all-skins.css);
+@import url(css/custom.css);
+

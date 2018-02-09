@@ -1,0 +1,8 @@
+/*ovveride*/
+.skin-green .main-header .logo {
+    min-height: 61px;
+}
+
+.skin-green-light .main-header .logo {
+    background-color: #06d79c ;
+}
