@@ -5,16 +5,17 @@ namespace App\Model\Manage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
-class UserData extends Model
+class Portal extends Model
 {
     // set table
-    protected $table = 'user_data';
+    protected $table = 'portal';
 
     // set fillable column
-    protected $fillable = ['nama_lengkap','tempat_lahir', 'tanggal_lahir','no_telp','jabatan','alamat','foto'];
+    protected $fillable = ['portal_nm','site_title', 'site_name','site_favicon','site_log','meta_keyword','meta_desc'];
 
-    // related user login
-//    public function userLogin(){
-//        return $this->hasOne('App\Model\Base\UserLogin');
-//    }
+    // set relation role
+    public function roles()
+    {
+        return $this->hasMany('App\Model\Manage\Role');
+    }
 }

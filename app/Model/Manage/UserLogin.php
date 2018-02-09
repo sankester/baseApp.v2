@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Base;
+namespace App\Model\Manage;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -33,6 +33,12 @@ class UserLogin extends Authenticatable
     // set relasi ke user data
     public function userData()
     {
-        return $this->hasOne('App\Model\Base\UserData');
+        return $this->hasOne('App\Model\Manage\UserData');
+    }
+
+    // set relation to role
+    public function roles()
+    {
+        return $this->belongsToMany('App\Model\Manage\Role', 'user_role');
     }
 }

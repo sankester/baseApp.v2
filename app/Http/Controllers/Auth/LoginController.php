@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -26,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/base/manage/home';
 
 
     /**
@@ -63,9 +64,45 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        $this->redirectTo = 'base/home';
+        // get list role user
+        $listRole = $user->roles()->get();
+        // cek role apakah bisa mengakses portal
+        $roleAccess = $this->cek_portal($listRole);
+        // cek role akses
+        if($roleAccess != false){
+            // jika ada
+            $this->redirectTo = $roleAccess->default_page;
+        }else{
+            // default action
+            $this->guard()->logout();
+            $request->session()->invalidate();
+            $this->redirectTo = '/login';
+        }
     }
 
+    // cek apakah role mempunyai akses portal
+    private function cek_portal($listRole){
+        // cek parameter
+        if($listRole){
+            // loop cek role
+            foreach ($listRole as $role){
+                // jika ada return true
+                if($role->portal_id == $this->getPortal()){
+                    return $role;
+                    break;
+                }
+            }
+        }
+        // default return
+        return false;
+    }
+
+    // get portal
+    protected function getPortal(){
+        return env('BASE_PORTAL');
+    }
+
+    // logout function
     public function logout(Request $request)
     {
         $this->guard()->logout();

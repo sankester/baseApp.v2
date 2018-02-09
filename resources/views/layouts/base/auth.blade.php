@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{{ asset('themes/base/images/favicon.ico') }}">
 
-    <title>Login Base Alication - Log in </title>
+    <title>Login Base Aplication - Log in </title>
 
     <!-- Bootstrap 4.0-->
     <link rel="stylesheet" href="{{ asset('themes/base/assets/vendor_components/bootstrap/dist/css/bootstrap.min.css') }}">

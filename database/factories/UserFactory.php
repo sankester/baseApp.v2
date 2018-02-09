@@ -14,7 +14,7 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(App\Model\Base\UserLogin::class, function (Faker $faker) {
+$factory->define(App\Model\Manage\UserLogin::class, function (Faker $faker) {
     return [
         'username' => 'admin',
         'email' => 'admin@baseapp.com',
@@ -25,7 +25,7 @@ $factory->define(App\Model\Base\UserLogin::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(App\Model\Base\UserData::class, function (Faker $faker){
+$factory->define(App\Model\Manage\UserData::class, function (Faker $faker){
     return [
         'nama_lengkap' => 'Ach. Vani ardiansyah',
         'tempat_lahir' => 'Banyuwangi',

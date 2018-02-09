@@ -15,15 +15,8 @@ class CreatePermissionTable extends Migration
     {
         Schema::create('permission', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('menu_id')->unsigned();
             $table->string('permission_nm');
             $table->timestamps();
-            // set relation
-            $table->foreign('menu_id')
-                  ->references('id')
-                  ->on('menu')
-                  ->onUpdate('cascade')
-                  ->onDelete('cascade');
         });
         // create pivot table role permission
         Schema::create('role_permission', function (Blueprint $table){
@@ -41,6 +34,22 @@ class CreatePermissionTable extends Migration
                   ->onDelete('cascade');
             $table->timestamps();
         });
+        // create pivot table menu permission
+        Schema::create('menu_permission', function (Blueprint $table){
+            $table->integer('menu_id')->unsigned();
+            $table->foreign('menu_id')
+                ->references('id')
+                ->on('menu')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->integer('permission_id')->unsigned();
+            $table->foreign('permission_id')
+                ->references('id')
+                ->on('permission')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -53,5 +62,6 @@ class CreatePermissionTable extends Migration
         Schema::dropIfExists('permission');
         // drop pivot table
         Schema::dropIfExists('role_permission');
+        Schema::dropIfExists('menu_permission');
     }
 }

@@ -21,6 +21,8 @@ class UserTableSeeder extends Seeder
             'status' => 'aktif',
             'experied' => Carbon::today()->addDay(1),
             'remember_token' => str_random(10),
+            'created_at' =>  Carbon::today(),
+            'updated_at' =>  Carbon::today(),
         ]);
         // default user data
         DB::table('user_data')->insert([
@@ -30,7 +32,9 @@ class UserTableSeeder extends Seeder
             'tanggal_lahir' => Carbon::createFromDate('1996','05','10'),
             'jabatan'   => 'developer',
             'no_telp'   => '082233637307',
-            'alamat'    => 'Dusun Jalen RT 03 RW 02 Desa Setail, Kecamatan Genteng, Kabupaten Banyuwangi'
+            'alamat'    => 'Dusun Jalen RT 03 RW 02 Desa Setail, Kecamatan Genteng, Kabupaten Banyuwangi',
+            'created_at' =>  Carbon::today(),
+            'updated_at' =>  Carbon::today(),
         ]);
     }
 }

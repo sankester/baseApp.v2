@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\BaseApp;
+namespace App\Http\Controllers\Manage;
 
 
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Http\Requests\BaseApp\PortalRequest;
 use App\Model\portal;
-use App\Repositories\BaseApp\PortalRepositories;
+use App\Repositories\Manage\PortalRepositories;
 use Illuminate\Http\Request;
 
 class PortalController extends BaseAdminController
@@ -28,6 +28,7 @@ class PortalController extends BaseAdminController
         parent::__construct($request);
         // initial portal repositories
         $this->repositories = $repositories;
+        $this->request = $request;
     }
     /**
      * Display a listing of the resource.
@@ -37,28 +38,15 @@ class PortalController extends BaseAdminController
     public function index()
     {
         // set rule page
-        $this->setRule('r');
+//        $this->setRule('r');
         // set page template
-        $this->setTemplate('BaseApp.portals.index');
+        $this->setTemplate('manage.portal.index');
         // load js
         $this->loadJs('theme/admin-template/js/plugins/notifications/sweet_alert.min.js');
-        $this->loadJs('js/BaseApp/portal/page_portal.js');
         //set page title
-        $this->setPageHeaderTitle('<span class="text-semibold">Portals</span> - List Portal');
-        // set breadcumb
-        $data = [
-            [
-                'icon' => 'icon-earth',
-                'url' => 'home',
-                'title' => 'Dasboard'
-            ],
-            [
-                'title' => 'List Portal'
-            ]
-        ];
-        $this->setBreadcumb($data);
+        $this->page->setTitle('Portal');
         //assign data
-        $this->assign('portals', $this->repositories->getListPaginate(10));
+//        $this->assign('portals', $this->repositories->getListPaginate(10));
         // display page
         return $this->displayPage();
     }

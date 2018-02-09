@@ -20,5 +20,6 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::prefix('base')->group(function () {
-    Route::get('home', 'Manage\HomeController@index')->name('base.home');
+    Route::get('manage/home', 'Manage\HomeController@index')->name('base.manage.home');
+    Route::resource('manage/portal', 'Manage\PortalController', ['except' => 'show', 'as' => 'manage']);
 });

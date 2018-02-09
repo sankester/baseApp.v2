@@ -21,37 +21,30 @@
             </li>
             <li class="nav-devider"></li>
             <li>
-                <a href="{{ route('base.home') }}">
-                    <i class="fa fa-home"></i> <span>Home</span>
+                <a href="{{ route('base.manage.home') }}">
+                    <i class="mdi mdi-view-dashboard mr-5"></i> <span>Home</span>
                 </a>
             </li>
-            <li class="header nav-small-cap">Manajemen User</li>
+            <li class="header "> Manajemen User</li>
             <li>
                 <a href="#">
-                    <i class="fa fa-user"></i> <span>User</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="fa fa-users"></i><span>Role & Permission</span>
+                    <i class="mdi mdi-account mr-5"></i> <span>User</span>
                 </a>
             </li>
             <li>
                 <a href="#">
-                    <i class="fa fa-bars"></i><span>Menu</span>
+                    <i class="mdi mdi-account-settings-variant mr-5"></i><span> Role & Permission</span>
                 </a>
             </li>
-            <li class="treeview">
+            <li>
                 <a href="#">
-                    <i class="fa fa-globe"></i>
-                    <span>Portal</span>
-                    <span class="pull-right-container"><i class="fa fa-angle-right pull-right"></i></span>
+                    <i class="mdi mdi-menu mr-5"></i><span>Menu</span>
                 </a>
-                <ul class="treeview-menu">
-                    <li><a href="../UI/badges.html">Badges</a></li>
-                    <li><a href="../UI/border-utilities.html">Border</a></li>
-                    <li><a href="../UI/buttons.html">Buttons</a></li>
-                </ul>
+            </li>
+            <li>
+                <a href="{{ route('manage.portal.index') }}">
+                    <i class="mdi mdi-web mr-5"></i><span> Portal</span>
+                </a>
             </li>
         </ul>
     </section>

@@ -6,3 +6,14 @@
 .skin-green-light .main-header .logo {
     background-color: #06d79c ;
 }
+
+.box .fx-card-item {
+    padding-bottom: 0px;
+    min-height: 150px;
+}
+
+.box .fx-card-item .fx-overlay-1{
+    min-height: 150px;
+}
+
+

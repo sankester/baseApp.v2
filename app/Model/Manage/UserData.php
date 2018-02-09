@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Base;
+namespace App\Model\Manage;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
@@ -14,7 +14,7 @@ class UserData extends Model
     protected $fillable = ['nama_lengkap','tempat_lahir', 'tanggal_lahir','no_telp','jabatan','alamat','foto'];
 
     // related user login
-//    public function userLogin(){
-//        return $this->hasOne('App\Model\Base\UserLogin');
-//    }
+    public function userLogin(){
+        return $this->belongsTo('App\Model\Manage\UserLogin');
+    }
 }
