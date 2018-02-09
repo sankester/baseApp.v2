@@ -4,7 +4,7 @@
     <form action="{{ route('login') }}" method="post" class="form-element">
         {{ csrf_field() }}
         <div class="form-group has-feedback {{ $errors->has('username') ? ' has-error' : '' }}">
-            <input type="text" name="username" class="form-control" placeholder="Username" value="{{ old('username') }}">
+            <input type="text" name="username" class="form-control control-input" placeholder="Username" value="{{ old('username') }}">
             <span class="ion ion-email form-control-feedback"></span>
             @if ($errors->has('username'))
                 <span class="help-block">
@@ -14,7 +14,7 @@
         </div>
 
         <div class="form-group has-feedback {{ $errors->has('password') ? ' has-error' : '' }}">
-            <input type="password" name="password" class="form-control" placeholder="Password">
+            <input type="password" name="password" class="form-control control-input" placeholder="Password">
             <span class="ion ion-locked form-control-feedback"></span>
             @if ($errors->has('password'))
                 <span class="help-block">

@@ -18,8 +18,9 @@ class CreatePortalTable extends Migration
             $table->string('portal_nm');
             $table->string('site_title');
             $table->string('site_name');
-            $table->string('site_favicon');
-            $table->string('site_logo');
+            $table->string('site_desc');
+            $table->string('site_favicon')->nullbale();
+            $table->string('site_logo')->nullable();
             $table->string('meta_keyword');
             $table->text('meta_desc');
             $table->timestamps();

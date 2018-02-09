@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Manage;
 
 
 use App\Http\Controllers\Base\BaseAdminController;
-use App\Http\Requests\BaseApp\PortalRequest;
-use App\Model\portal;
+use App\Http\Requests\Manage\PortalRequest;
 use App\Repositories\Manage\PortalRepositories;
 use Illuminate\Http\Request;
 
@@ -37,16 +36,15 @@ class PortalController extends BaseAdminController
      */
     public function index()
     {
-        // set rule page
-//        $this->setRule('r');
         // set page template
         $this->setTemplate('manage.portal.index');
         // load js
-        $this->loadJs('theme/admin-template/js/plugins/notifications/sweet_alert.min.js');
+        $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
+        $this->loadJs('js/base/manage/portal/index.js');
         //set page title
         $this->page->setTitle('Portal');
         //assign data
-//        $this->assign('portals', $this->repositories->getListPaginate(10));
+        $this->assign('portals', $this->repositories->getListPaginate(10));
         // display page
         return $this->displayPage();
     }
@@ -58,34 +56,13 @@ class PortalController extends BaseAdminController
      */
     public function create()
     {
-        // set rule page
-        $this->setRule('c');
         // set page template
-        $this->setTemplate('BaseApp.portals.add');
+        $this->setTemplate('manage.portal.add');
         // load js
-        $this->loadJs('theme/admin-template/js/plugins/forms/validation/validate.min.js');
-        $this->loadJs('theme/admin-template/js/plugins/forms/validation/additional_methods.min.js');
-        $this->loadJs('js/BaseApp/portal/page_portal.js');
-        $this->loadJs('js/BaseApp/portal/validation.js');
+        $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
+        $this->loadJs('themes/general/uniform/uniform.min.js');
         //set page title
-        $this->setPageHeaderTitle('<span class="text-semibold">Portals</span> - Add Portals');
-        // set breadcumb
-        $data = [
-            [
-                'icon' => 'icon-icon-earth',
-                'url' => 'home',
-                'title' => 'Dasboard'
-            ],
-            [
-                'title' => 'List Portal',
-                'url' => 'base/portals',
-            ],
-            [
-                'title' => 'Add Portal',
-            ],
-
-        ];
-        $this->setBreadcumb($data);
+        $this->page->setTitle('Tambah Portal');
         // load view
         return $this->displayPage();
     }
@@ -98,69 +75,32 @@ class PortalController extends BaseAdminController
      */
     public function store(PortalRequest $request)
     {
-        // set rule page
-        $this->setRule('c');
         // proses tambah portal ke database
-        if($this->repositories->createPortal($request->all())){
-            // set notifikasi sukses
-            flash('Berhasil tambah data portal')->success()->important();
+        if($this->repositories->createPortal($request)){
+            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
         }else{
-            // set notifikasi error
-            flash('Gagal tambah data portal')->error()->important();
+            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah portal.']);
         }
         // redirect page
-        return redirect('base/portals/create');
+        return redirect()->route('manage.portal.create');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Model\portal  $portal
-     * @return \Illuminate\Http\Response
-     */
-    public function show(portal $portal)
-    {
-
-    }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Model\portal  $portal
      * @return \Illuminate\Http\Response
      */
-    public function edit(portal $portal)
+    public function edit($portalId)
     {
-        // set rule page
-        $this->setRule('u');
         // set template
-        $this->setTemplate('BaseApp.portals.edit');
+        $this->setTemplate('manage.portal.edit');
         // load js
-        $this->loadJs('theme/admin-template/js/plugins/forms/validation/validate.min.js');
-        $this->loadJs('theme/admin-template/js/plugins/forms/validation/additional_methods.min.js');
-        $this->loadJs('js/BaseApp/portal/page_portal.js');
-        $this->loadJs('js/BaseApp/portal/validation.js');
+        $this->loadJs('themes/general/uniform/uniform.min.js');
         //set page title
-        $this->setPageHeaderTitle('<span class="text-semibold">Portals</span> - Edit Portal');
-        // set breadcumb
-        $data = [
-            [
-                'icon' => 'icon-icon-earth',
-                'url' => 'home',
-                'title' => 'Dasboard'
-            ],
-            [
-                'title' => 'List Portal',
-                'url' => 'base/portals',
-            ],
-            [
-                'title' => 'Edit Portal',
-            ],
-
-        ];
-        $this->setBreadcumb($data);
+        $this->page->setTitle('Edit Portal');
         // assign data
-        $this->assign('portal',$portal);
+        $this->assign('portal', $this->repositories->getPortalById($portalId));
         // display page
         return  $this->displayPage();
     }
@@ -169,43 +109,37 @@ class PortalController extends BaseAdminController
     /**
      * Proses ubah data portal di database
      * @param PortalRequest $request
-     * @param portal $portal
+     * @param $portalId
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function update(PortalRequest $request, portal $portal)
+    public function update(PortalRequest $request, $portalId)
     {
-        // set rule page
-        $this->setRule('u');
         // proses update data portal di database
-        if($this->repositories->updatePortal($request->all(), $portal)){
+        if($this->repositories->updatePortal($request, $portalId)){
             // set notifikasi success
-            flash('Berhasil ubah data portal')->success()->important();
+            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
         }else{
             // set notifikasi error
-            flash('Gagal ubah data portal')->error()->important();
+            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah portal.']);
         }
         // redirect page
-        return redirect('base/portals/'.$portal->id.'/edit');
+        return redirect()->route('manage.portal.edit', $portalId);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Model\portal $portal
+     * @param $portalId
      * @param PortalRequest $request
      * @return \Illuminate\Http\Response
+     * @internal param \App\Model\portal $portal
      */
-    public function destroy(portal $portal, PortalRequest $request)
+    public function destroy($portalId, PortalRequest $request)
     {
         // cek apakah ajax request
         if ($request->ajax()){
-            // cek rule
-            $access = $this->setRule('d');
-            if($access['access'] == 'failed'){
-                return response(['message' => $access['message'], 'status' => 'failed']);
-            }
             // proses hapus portal dari database
-            if($this->repositories->deletePortal($portal)){
+            if($this->repositories->deletePortal($portalId)){
                 // set response
                 return response(['message' => 'Berhasil menghapus portal.', 'status' => 'success']);
             }

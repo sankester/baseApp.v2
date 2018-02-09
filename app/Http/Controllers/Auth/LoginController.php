@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -57,10 +58,12 @@ class LoginController extends Controller
         return view('auth.base.login');
     }
 
+
     /**
-     * If Authenticated
+     * Jika terdaftar
      * @param Request $request
      * @param $user
+     * @throws ValidationException
      */
     protected function authenticated(Request $request, $user)
     {
@@ -70,6 +73,8 @@ class LoginController extends Controller
         $roleAccess = $this->cek_portal($listRole);
         // cek role akses
         if($roleAccess != false){
+            // set seesion
+            $request->session()->put('role_active', $roleAccess);
             // jika ada
             $this->redirectTo = $roleAccess->default_page;
         }else{
@@ -77,6 +82,10 @@ class LoginController extends Controller
             $this->guard()->logout();
             $request->session()->invalidate();
             $this->redirectTo = '/login';
+            // set error
+            throw ValidationException::withMessages([
+                $this->username() => 'User tidak ditemukan',
+            ]);
         }
     }
 

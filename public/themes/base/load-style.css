@@ -4,4 +4,6 @@
 @import url(css/master_style_custom.css);
 @import url(css/skins/_all-skins.css);
 @import url(css/custom.css);
+@import url(../general/uniform/uniform.css);
+@import url(assets/vendor_components/sweetalert/sweetalert.css);
 

@@ -18,6 +18,7 @@ class PortalTableSeeder extends Seeder
             'portal_nm' => 'Base Admin',
             'site_title' => 'Base Manajemen',
             'site_name' => 'Base Manajemen', // admin
+            'site_desc' => 'Portal khusus untup developer mengelola aplikasi',
             'site_favicon' => '-',
             'site_logo' => '-',
             'meta_keyword' => '-',

@@ -169,7 +169,8 @@ return [
          */
         // laravel collective
         Collective\Html\HtmlServiceProvider::class,
-
+        // image intervention
+        Intervention\Image\ImageServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -230,6 +231,8 @@ return [
         // laravel collective
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
+        // image intervention
+        'Image' => Intervention\Image\Facades\Image::class
     ],
 
 ];

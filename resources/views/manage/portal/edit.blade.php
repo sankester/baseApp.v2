@@ -9,7 +9,7 @@
             <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Home</a></li>
             <li class="breadcrumb-item"><a href="#">Manage</a></li>
             <li class="breadcrumb-item"><a href="{{ route('manage.portal.index') }}">Portal</a></li>
-            <li class="breadcrumb-item active">Tambah Data</li>
+            <li class="breadcrumb-item active">Edit Data</li>
         </ol>
     </section>
     <!-- Main content -->
@@ -20,7 +20,7 @@
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title">
-                            Form Tambah Portal
+                            Form Edit Portal
                         </h3>
                         <div class="box-controls pull-right">
                             <a class="btn btn-sm btn-default" href="{{ route('manage.portal.index') }}"><i class="mdi mdi-chevron-left mr-5"></i> Kembali</a>
@@ -30,8 +30,8 @@
                     @include('layouts.notification.base_notification')
                     {{--end include notification--}}
                     <!-- form start -->
-                    {!! Form::model($portal = new \App\Model\Manage\Portal(),['route' => 'manage.portal.store', 'class' => 'form-horizontal form-element','enctype'=>"multipart/form-data", 'id' => 'ubah-user']) !!}
-                        @include('manage.portal.form',['textButton' => 'Simpan', 'icon' => 'mdi mdi-plus'])
+                    {!! Form::model($portal ,['method' => 'PATCH', 'route' => ['manage.portal.update', $portal->id], 'class' => 'form-horizontal form-element','enctype'=>"multipart/form-data", 'id' => 'ubah-user']) !!}
+                        @include('manage.portal.form',['textButton' => 'Edit', 'icon' => 'mdi mdi-pencil'])
                     {!! Form::close() !!}
                 </div>
                 <!-- /.box -->

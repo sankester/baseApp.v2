@@ -221,5 +221,6 @@
     <!-- Default Js-->
     {!! $page->generateJs()  !!}
     <!--End default Js-->
+    @yield('custom-js')
 </body>
 </html>

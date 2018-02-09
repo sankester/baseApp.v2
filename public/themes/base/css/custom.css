@@ -1,4 +1,4 @@
-/*ovveride*/
+/*ovveride logo*/
 .skin-green .main-header .logo {
     min-height: 61px;
 }
@@ -7,6 +7,7 @@
     background-color: #06d79c ;
 }
 
+/*custom box card*/
 .box .fx-card-item {
     padding-bottom: 0px;
     min-height: 150px;
@@ -16,4 +17,9 @@
     min-height: 150px;
 }
 
+/*custom error page*/
+.error-page .empty-data{
+    width: 360px;
+    margin: auto;
+}
 

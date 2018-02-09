@@ -8,7 +8,7 @@
             <li class="user-profile treeview">
                 <a href="index.html">
                     <img src="{{ asset('themes/base/images/user5-128x128.jpg') }}" alt="user">
-                    <span>Juliya Brus</span>
+                    <span>{{ Auth::user()->userData->nama_lengkap }}</span>
                     <span class="pull-right-container">
                           <i class="fa fa-angle-right pull-right"></i>
                         </span>
