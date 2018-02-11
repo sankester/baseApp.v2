@@ -15,8 +15,16 @@ class CreatePermissionTable extends Migration
     {
         Schema::create('permission', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('portal_id')->unsigned();
             $table->string('permission_nm');
+            $table->string('permission_group');
             $table->timestamps();
+            // set foreign key
+            $table->foreign('portal_id')
+                  ->references('id')
+                  ->on('portal')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
         });
         // create pivot table role permission
         Schema::create('role_permission', function (Blueprint $table){

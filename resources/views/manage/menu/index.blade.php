@@ -3,12 +3,12 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            Portal
+            Menu
         </h1>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Home</a></li>
             <li class="breadcrumb-item"><a href="#">Manage</a></li>
-            <li class="breadcrumb-item active">Portal</li>
+            <li class="breadcrumb-item active">Menu</li>
         </ol>
     </section>
     <!-- Main content -->
@@ -17,19 +17,15 @@
             <div class="col-md-12">
                 <h3 class="page-header">
                     List Portal
-                    <div class="box-controls pull-right">
-                        <a class="btn btn-sm btn-primary" href="{{ route('manage.portal.create') }}"><i class="mdi mdi-plus mr-5"></i> Tambah Data</a>
-                    </div>
                 </h3>
             </div>
-
         </div>
         @if(empty($portals))
             <div class="error-page empty-data">
                 <div class="error-content">
                     <div class="container text-center">
-                        <h2 class="headline text-muted"><i class="mdi mdi-web"></i></h2>
-                        <h3 class="margin-top-0">Portal Belum Tersedia !</h3>
+                        <h2 class="headline text-muted"><i class="mdi mdi-web "></i></h2>
+                        <h3 class="margin-top-0">Menu Belum Tersedia !</h3>
                     </div>
                 </div>
             </div>
@@ -44,8 +40,7 @@
                                 <p class="box-text text-left">{{ $portal->site_desc }}</p>
                                 <div class="fx-overlay scrl-up">
                                     <ul class="fx-info">
-                                        <li><a class="btn default btn-outline image-popup-vertical-fit" href="{{ route('manage.portal.edit', $portal->id ) }}"><i class="mdi mdi-pencil"></i></a></li>
-                                        <li><a class="btn default btn-outline delete-portal" data-id="{{$portal->id}}" href="#" data-url ="{{ route('manage.portal.destroy',$portal->id) }}" data-token="{{ csrf_token() }}"><i class="mdi mdi-delete"></i></a></li>
+                                        <li><a class="btn default btn-outline image-popup-vertical-fit" href="{{ route('manage.menu.show', $portal->id ) }}"><i class="mdi mdi-eye"></i></a></li>
                                     </ul>
                                 </div>
                             </div>

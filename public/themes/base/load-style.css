@@ -1,9 +1,15 @@
 /*import base*/
 @import url(assets/vendor_components/bootstrap/dist/css/bootstrap.min.css);
 @import url(assets/vendor_components/bootstrap/dist/css/bootstrap-extend.css);
+/*load select2*/
+@import url(assets/vendor_components/select2/dist/css/select2.min.css);
+/*load nestable*/
+@import url(../general/Nestable2-master/jquery.nestable.min.css);
 @import url(css/master_style_custom.css);
 @import url(css/skins/_all-skins.css);
 @import url(css/custom.css);
+/*load uniform*/
 @import url(../general/uniform/uniform.css);
+/*load sweet alert*/
 @import url(assets/vendor_components/sweetalert/sweetalert.css);
 

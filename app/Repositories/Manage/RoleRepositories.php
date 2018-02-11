@@ -9,9 +9,8 @@
 namespace App\Repositories\Manage;
 
 
-use App\Libs\LogLib\LogRepository;
-use App\Model\Role;
-use Illuminate\Support\Facades\Auth;
+use App\Model\Manage\Role;
+use Illuminate\Http\Request;
 
 class RoleRepositories
 {
@@ -23,6 +22,12 @@ class RoleRepositories
     public function getListPaginate($limit)
     {
         return Role::paginate($limit);
+    }
+
+    // ambil role berdasarkan portal ID
+    public function getRoleByPortal($portal_id, $per_page = 10)
+    {
+        return Role::where('portal_id', $portal_id)->paginate($per_page);
     }
 
     /**
@@ -37,29 +42,30 @@ class RoleRepositories
             $role_data[$role->id] =  $role->role_nm.' - '.$role->portal->portal_nm;
         }
         return $role_data;
-//        return Role::pluck('role_nm','id');
     }
 
+    // ambil jumlah role
     public function getCountRole()
     {
         return Role::all()->count();
     }
 
+    // ambil jumlah role berdasarkan portal
     public function getCountRoleByPortal($portal_id)
     {
         return Role::where('portal_id',$portal_id)->count();
     }
 
-    /**
-     * Proses menambah role ke database
-     * @param $params
-     * @return $this|\Illuminate\Database\Eloquent\Model
-     */
-    public function createRole($params)
+    // proses tambah role
+    public function createRole(Request $request)
     {
-        LogRepository::addLog('insert', 'Tambah role dengan data',null,$params );
-        $params['user_id'] = Auth::user()->id;
-        return Role::create($params);
+        // proses create
+        if(Role::create($request->all())){
+            // return true
+            return true;
+        }
+        // default return
+        return false;
     }
 
     /**
@@ -70,7 +76,6 @@ class RoleRepositories
      * @internal param $id
      */
     public function updateRole($params, Role $role){
-        LogRepository::addLog('update', 'Update role dengan data',$role,$params );
         return $role->update($params);
     }
 
@@ -83,7 +88,6 @@ class RoleRepositories
      */
     public function deleteRole(Role $role)
     {
-        LogRepository::addLog('delete','Hapus role dengan nama role : '.$role->role_nm);
         return  $roleDelete = $role->delete();
     }
 }

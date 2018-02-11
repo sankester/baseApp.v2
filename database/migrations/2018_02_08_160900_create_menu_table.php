@@ -24,7 +24,7 @@ class CreateMenuTable extends Migration
             $table->enum('active_st',['yes','no']);
             $table->enum('display_st',['yes','no']);
             $table->string('menu_st');
-            $table->string('menu_icon');
+            $table->string('menu_icon')->nullable();
             $table->enum('menu_target',['self','blank']);
             $table->timestamps();
             // sert relation

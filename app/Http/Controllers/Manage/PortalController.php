@@ -42,7 +42,7 @@ class PortalController extends BaseAdminController
         $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
         $this->loadJs('js/base/manage/portal/index.js');
         //set page title
-        $this->page->setTitle('Portal');
+        $this->page->setTitle('Manajemen Portal');
         //assign data
         $this->assign('portals', $this->repositories->getListPaginate(10));
         // display page

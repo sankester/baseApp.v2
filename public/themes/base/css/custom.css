@@ -11,6 +11,7 @@
 .box .fx-card-item {
     padding-bottom: 0px;
     min-height: 150px;
+    height: 150px;
 }
 
 .box .fx-card-item .fx-overlay-1{
@@ -22,4 +23,19 @@
     width: 360px;
     margin: auto;
 }
+
+.dd-list .dd-item  .dd-handle {
+    height: auto;
+}
+
+.dd {
+    max-width: 100%;
+}
+
+.dd-handle .media .media-body .subtitle{
+    font-size: 10px;
+    font-face: italic
+}
+
+
 

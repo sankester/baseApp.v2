@@ -18,4 +18,10 @@ class Portal extends Model
     {
         return $this->hasMany('App\Model\Manage\Role');
     }
+
+    // set relational menu
+    public function menu()
+    {
+        return $this->hasMany('App\Model\Manage\Menu');
+    }
 }

@@ -31,13 +31,21 @@
                     <i class="mdi mdi-account mr-5"></i> <span>User</span>
                 </a>
             </li>
-            <li>
+            <li class="treeview">
                 <a href="#">
-                    <i class="mdi mdi-account-settings-variant mr-5"></i><span> Role & Permission</span>
+                    <i class="mdi mdi-account-settings-variant mr-5"></i>
+                    <span>Role & Permission</span>
+                    <span class="pull-right-container">
+                      <i class="fa fa-angle-right pull-right"></i>
+                    </span>
                 </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ route('manage.role.index') }}">Role</a></li>
+                    <li><a href="#">Permission</a></li>
+                </ul>
             </li>
             <li>
-                <a href="#">
+                <a href="{{ route('manage.menu.index') }}">
                     <i class="mdi mdi-menu mr-5"></i><span>Menu</span>
                 </a>
             </li>

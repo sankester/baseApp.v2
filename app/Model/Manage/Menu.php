@@ -10,6 +10,9 @@ class Menu extends Model
     // set table
     protected $table = 'menu';
 
+    // set custom attribute
+    protected $childMenu  = null;
+
     // set fillable column
     protected $fillable = [
         'portal_id','parent_id',
@@ -30,5 +33,15 @@ class Menu extends Model
     public function permission()
     {
         return $this->belongsToMany('App\Model\Manage\Permission', 'menu_permission', 'permission_id','menu_id');
+    }
+
+    public function getChildMenu()
+    {
+        return $this->childMenu;
+    }
+
+    public function setChildMenu($value)
+    {
+        $this->childMenu = $value;
     }
 }

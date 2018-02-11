@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Manage;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
 
-class NavRequest extends FormRequest
+class MenuRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,14 +30,26 @@ class NavRequest extends FormRequest
         switch($this->method())
         {
             case 'POST':
+                $rules = [
+                    'menu_title' =>  'required|min:1|max:100',
+                    'menu_desc' =>  'required|min:1|max:100',
+                    'menu_url' =>  'required|min:1|max:100',
+                    'menu_st' =>  'required|min:1|max:100',
+                    'active_st' =>  'required|min:1|max:100',
+                    'display_st' =>  'required|min:1|max:100',
+                ];
+                break;
             case 'PUT':
             case 'PATCH':
             {
                 $rules = [
-                    'nav_title' =>  'required|min:3|max:100',
-                    'nav_url' =>  'required|min:1|max:100',
-                    'nav_no' =>  'required|integer',
-                    'nav_st' =>  'required',
+                    'menu_title' =>  'required|min:1|max:100',
+                    'menu_desc' =>  'required|min:1|max:100',
+                    'menu_url' =>  'required|min:1|max:100',
+                    'menu_st' =>  'required|min:1|max:100',
+                    'active_st' =>  'required|min:1|max:100',
+                    'display_st' =>  'required|min:1|max:100',
+                    'menu_target' =>  'required|min:1|max:100',
                 ];
                 break;
             }
@@ -64,8 +77,7 @@ class NavRequest extends FormRequest
     }
 
     public function response(array $errors){
-        // set error notification
-        flash($this->getErrorNotification())->error();
+
         if ($this->expectsJson()) {
             return new JsonResponse($errors, 422);
         }
@@ -75,13 +87,4 @@ class NavRequest extends FormRequest
             ->withErrors($errors, $this->errorBag);
     }
 
-    public function getErrorNotification()
-    {
-        // cek reuest method
-        if($this->method() == 'POST'){
-            return 'Gagal menambahkan data';
-        }else if($this->method() == 'PUT' || $this->method() == 'PATCH'){
-            return 'Gagal mengubah data';
-        }
-    }
 }

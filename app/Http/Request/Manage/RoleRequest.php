@@ -34,8 +34,8 @@ class RoleRequest extends FormRequest
             case 'PATCH':
             {
                 $rules = [
-                    'role_nm' =>  'required|min:5|max:50',
-                    'role_desc' =>  'required|min:5',
+                    'role_nm' =>  'required|min:3|max:50',
+                    'role_desc' =>  'required|min:3',
                     'default_page' =>  'required|min:3|max:100',
                     'portal_id' =>  'integer',
                 ];
@@ -63,8 +63,6 @@ class RoleRequest extends FormRequest
     }
 
     public function response(array $errors){
-        // set botification error
-        flash($this->getErrorNotification())->error();
         if ($this->expectsJson()) {
             return new JsonResponse($errors, 422);
         }
