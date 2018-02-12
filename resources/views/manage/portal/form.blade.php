@@ -10,8 +10,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('site_title') ? ' has-error' : '' }}">
         {!! Form::label('site_title','Judul Situs',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -23,8 +21,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('site_name') ? ' has-error' : '' }}">
         {!! Form::label('site_name','Nama Situs',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -36,8 +32,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('site_desc') ? ' has-error' : '' }}">
         {!! Form::label('site_desc','Deskripsi Situs',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -49,8 +43,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('site_favicon') ? ' has-error' : '' }}">
         {!! Form::label('site_favicon','Favicon ',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -67,8 +59,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('site_logo') ? ' has-error' : '' }}">
         {!! Form::label('site_logo','Logo ',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -85,8 +75,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('meta_keyword') ? ' has-error' : '' }}">
         {!! Form::label('meta_keyword','Meta Keyword',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -98,8 +86,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('meta_desc') ? ' has-error' : '' }}">
         {!! Form::label('meta_desc','Meta Deskripsi',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -113,8 +99,8 @@
     </div>
 </div>
 <!-- /.box-body -->
-<div class="box-footer clearfix pull-right">
-    <button type="reset" class="btn btn-default"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
-    <button type="submit" class="btn btn-success"><i class="{{ $icon }} mr-5"></i> {{ $textButton }}</button>
+<div class="box-footer clearfix col-md-12">
+    <button type="submit" class="btn btn-success pull-right"><i class="{{ $icon }} mr-5"></i> {{ $textButton }}</button>
+    <button type="reset" class="btn btn-default pull-right mr-10"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
 </div>
 <!-- /.box-footer -->

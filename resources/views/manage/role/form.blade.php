@@ -51,8 +51,8 @@
     </div>
 </div>
 <!-- /.box-body -->
-<div class="box-footer clearfix pull-right">
-    <button type="reset" class="btn btn-default"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
-    <button type="submit" class="btn btn-success"><i class="{{ $icon }} mr-5"></i> {{ $textButton }}</button>
+<div class="box-footer col-md-12 ">
+    <button type="reset" class="btn btn-default pull-right"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
+    <button type="submit" class="btn btn-success pull-right"><i class="{{ $icon }} mr-5"></i> {{ $textButton }}</button>
 </div>
 <!-- /.box-footer -->

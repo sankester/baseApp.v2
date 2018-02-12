@@ -14,8 +14,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('menu_title') ? ' has-error' : '' }}">
         {!! Form::label('menu_title','Nama Menu',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -27,8 +25,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('menu_desc') ? ' has-error' : '' }}">
         {!! Form::label('menu_desc','Deskripsi menu',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -40,8 +36,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('menu_url') ? ' has-error' : '' }}">
         {!! Form::label('menu_url','Alamat menu',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -53,8 +47,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('menu_st') ? ' has-error' : '' }}">
         {!! Form::label('menu_st','Status Menu',['class' => 'col-md-3 control-label']) !!}
         <div class="col-sm-2">
@@ -66,8 +58,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('active_st') ? ' has-error' : '' }}">
         {!! Form::label('active_st','Status Aktif',['class' => 'col-md-3 control-label']) !!}
         <div class="col-sm-2">
@@ -79,8 +69,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('display_st') ? ' has-error' : '' }}">
         {!! Form::label('display_st','Status Tampilkan',['class' => 'col-md-3 control-label']) !!}
         <div class="col-sm-2">
@@ -92,8 +80,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('menu_target') ? ' has-error' : '' }}">
         {!! Form::label('menu_target','Status Tampilkan',['class' => 'col-md-3 control-label']) !!}
         <div class="col-sm-2">
@@ -105,8 +91,6 @@
             @endif
         </div>
     </div>
-</div>
-<div class="box-body">
     <div class="form-group row {{ $errors->has('menu_icon') ? ' has-error' : '' }}">
         {!! Form::label('menu_icon','Icon',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -158,9 +142,9 @@
     </div>
 </div>
 <!-- /.box-body -->
-<div class="box-footer clearfix pull-right">
-    <button type="reset" class="btn btn-default"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
-    <button type="submit" class="btn btn-success"><i class="{{ $iconButton }} mr-5"></i> {{ $textButton }}</button>
+<div class="box-footer clearfix col-md-12">
+    <button type="submit" class="btn btn-success pull-right"><i class="{{ $icon }} mr-5"></i> {{ $textButton }}</button>
+    <button type="reset" class="btn btn-default pull-right mr-10"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
 </div>
 <!-- /.box-footer -->
 @section('custom-js')

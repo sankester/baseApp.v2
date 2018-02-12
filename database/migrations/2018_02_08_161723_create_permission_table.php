@@ -18,6 +18,8 @@ class CreatePermissionTable extends Migration
             $table->integer('portal_id')->unsigned();
             $table->string('permission_nm');
             $table->string('permission_group');
+            $table->string('permission_slug');
+            $table->string('permission_desc');
             $table->timestamps();
             // set foreign key
             $table->foreign('portal_id')

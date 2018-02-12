@@ -41,7 +41,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="{{ route('manage.role.index') }}">Role</a></li>
-                    <li><a href="#">Permission</a></li>
+                    <li><a href="{{ route('manage.permission.index') }}">Permission</a></li>
                 </ul>
             </li>
             <li>

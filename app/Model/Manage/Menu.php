@@ -32,14 +32,16 @@ class Menu extends Model
     // set relation permission
     public function permission()
     {
-        return $this->belongsToMany('App\Model\Manage\Permission', 'menu_permission', 'permission_id','menu_id');
+        return $this->belongsToMany('App\Model\Manage\Permission', 'menu_permission','menu_id', 'permission_id');
     }
 
+    // get child menu
     public function getChildMenu()
     {
         return $this->childMenu;
     }
 
+    // set child menu
     public function setChildMenu($value)
     {
         $this->childMenu = $value;

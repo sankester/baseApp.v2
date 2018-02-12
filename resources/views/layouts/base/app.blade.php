@@ -18,7 +18,7 @@
     <![endif]-->
 
 </head>
-<body class="hold-transition skin-green-light sidebar-mini">
+<body class="hold-transition skin-green-light sidebar-mini" >
     <!-- Site wrapper -->
     <div class="wrapper">
         {{--include navbar--}}
@@ -27,7 +27,7 @@
         @include('layouts.base.sidebar')
         <!-- =============================================== -->
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
+        <div class="content-wrapper" id="app">
             @yield('content')
         </div>
         <!-- /.content-wrapper -->

@@ -32,4 +32,8 @@ Route::prefix('base')->group(function () {
     Route::get('/manage/menu/{portal}/{menu}/edit', 'Manage\MenuController@edit')->name('manage.menu.edit');
     Route::patch('/manage/menu/{menu}', 'Manage\MenuController@update')->name('manage.menu.update');
     Route::put('/manage/menu/{portal}/sortable', 'Manage\MenuController@sortable')->name('manage.menu.sortable');
+    // permission
+    Route::resource('manage/permission', 'Manage\PermissionController', ['as' => 'manage']);
+    Route::post('/manage/permission/search', 'Manage\PermissionController@search')->name('manage.permission.search');
+    Route::post('/manage/permission/getListMenu', 'Manage\PermissionController@getListMenu')->name('manage.permission.getlistmenu');
 });

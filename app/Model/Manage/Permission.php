@@ -8,16 +8,20 @@ use Illuminate\Support\Facades\App;
 class Permission extends Model
 {
     // set table
-    protected $table = 'menu';
+    protected $table = 'permission';
 
     // set fillable column
     protected $fillable = [
+        'portal_id',
         'permission_nm',
+        'permission_group',
+        'permission_slug',
+        'permission_desc'
     ];
 
     // set relation menu
     public function menu()
     {
-        return $this->belongsToMany('App\Model\Manage\Menu','menu_permission','menu_id','permission_id');
+        return $this->belongsToMany('App\Model\Manage\Menu','menu_permission','permission_id','menu_id');
     }
 }

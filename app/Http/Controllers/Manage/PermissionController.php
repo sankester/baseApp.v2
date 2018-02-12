@@ -1,113 +1,172 @@
 <?php
 
-namespace App\Http\Controllers\BaseApp;
+namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Base\BaseAdminController;
-
-use App\Repositories\BaseApp\PermissionRepositories;
-use App\Repositories\BaseApp\RoleRepositories;
-use App\Model\Role;
+use App\Http\Requests\Manage\PermissionRequest;
+use App\Model\Manage\Menu;
+use App\Repositories\Manage\MenuRepositories;
+use App\Repositories\Manage\PermissionRepositories;
+use App\Repositories\Manage\PortalRepositories;
 use Illuminate\Http\Request;
 
 class PermissionController extends BaseAdminController
 {
-    /**
-     * @var PermissionRepositories
-     */
-    private $permissionRepositories;
+    // permission repositories
+    private $repositories;
 
-    /**
-     * @var RoleRepositories
-     */
-    private $roleRepositories;
-
-    public function __construct(PermissionRepositories $permissionRepositories, Request $request, RoleRepositories $roleRepositories)
+    public function __construct( PermissionRepositories $permissionRepositories, Request $request)
     {
         parent::__construct($request);
-        $this->permissionRepositories = $permissionRepositories;
-        $this->roleRepositories = $roleRepositories;
+        $this->repositories = $permissionRepositories;
     }
 
-    public function index()
+    // tampilkan list permission
+    public function index(PortalRepositories $portalRepositories)
     {
-        // set rule page
-        $this->setRule('r');
         // set page template
-        $this->setTemplate('BaseApp.permissions.index');
+        $this->setTemplate('manage.permission.index');
+        // load js
+        $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
+        $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
         //set page title
-        $this->setPageHeaderTitle('<span class="text-semibold">Permissions</span> - List Role');
-        // set breadcumb
-        $data = [
-            [
-                'icon' => 'icon-user-lock',
-                'url' => 'home',
-                'title' => 'Dasboard'
-            ],
-            [
-                'title' => 'List Role Permissions'
-            ]
-        ];
-        $this->setBreadcumb($data);
-        //assign data
-        $this->assign('roles', $this->roleRepositories->getListPaginate(10));
+        $this->page->setTitle('Manajemen Permission');
+        // get search data
+        $search = $this->request->session()->get('search_permission');
+        // get and set data
+        $listPortal = $portalRepositories->getAll();
+        $defaultPortal = (isset($search['portal_id'])) ? $search['portal_id'] : $listPortal->first()->id;
+        $search['portal_id'] = (isset($search['portal_id'])) ? $search['portal_id'] : $listPortal->first()->id;
+        $permissionName = (isset($search['permission_nm'])) ? '%'.$search['permission_nm'].'%' : '%';
+        $listPermission = $this->repositories->getListPaginate($defaultPortal,$permissionName);
+        // assign
+        $this->assign('listPortal' , $listPortal->pluck('portal_nm', 'id'));
+        $this->assign('search', $search);
+        $this->assign('listPermission', $listPermission);
         // display page
         return $this->displayPage();
     }
 
-    public function edit(Role $role)
+    // proses cari
+    public function search(Request $request)
     {
-        // set rule page
-        $this->setRule('u');
+        // cek input dengan nama search
+        if($request->has('search')){
+            // validate input
+            if($request->get('search') == 'cari'){
+                // set data
+                $data = [
+                    'portal_id' => $request->portal_id,
+                    'permission_nm' => $request->permission_nm,
+                ];
+                // set session cari
+                $request->session()->put('search_permission', $data);
+            }
+        }else{
+            // remove session cari
+            $request->session()->remove('search_permission');
+        }
+        // default redirect
+        return redirect()->route('manage.permission.index');
+    }
+
+    public function create(PortalRepositories $portalRepositories)
+    {
         // set page template
-        $this->setTemplate('BaseApp.permissions.edit');
+        $this->setTemplate('manage.permission.add');
         // load js
-        $this->loadJs('theme/admin-template/js/plugins/forms/styling/uniform.min.js');
+        $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
+        $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
+        $this->loadJs('themes/general/jQuery-Autocomplete-master/dist/jquery.autocomplete.min.js');
+        $this->loadJs('js/base/manage/menu/add.js');
+        $this->loadJs('js/app.js');
         //set page title
-        $this->setPageHeaderTitle('<span class="text-semibold">Permissions</span> - List Menu');
-        // set breadcumb
-        $data = [
-            [
-                'icon' => 'icon-user-lock',
-                'url' => 'home',
-                'title' => 'Dasboard'
-            ],
-            [
-                'url' => 'permissions',
-                'title' => 'List Role'
-            ],
-            [
-                'title' => 'List Menu'
-            ]
-        ];
-        $this->setBreadcumb($data);
+        $this->page->setTitle('Tambah Permission');
         // get data
-        $listMenu  = $this->permissionRepositories->getListMenu($role->portal_id,0,'');
-        foreach ( $listMenu as $key => $menu) {
-            $c = isset($menu->roles->where('id','=',$role->id)->first()->pivot->c) ?  $menu->roles->where('id','=',$role->id)->first()->pivot->c :  0;
-            $r = isset($menu->roles->where('id','=',$role->id)->first()->pivot->r) ?  $menu->roles->where('id','=',$role->id)->first()->pivot->r :  0;
-            $u = isset($menu->roles->where('id','=',$role->id)->first()->pivot->u) ?  $menu->roles->where('id','=',$role->id)->first()->pivot->u :  0;
-            $d = isset($menu->roles->where('id','=',$role->id)->first()->pivot->d) ?  $menu->roles->where('id','=',$role->id)->first()->pivot->d :  0;
-            if($c == 1 && $r == 1 && $u == 1 && $d == 1){
-                $listMenu[$key]->check_all = true;
+        $listPortal = $portalRepositories->getAll();
+        $listGroup = $this->repositories->getGroupAvailible( $listPortal->first()->id)->toArray();
+        $groupOutput  = '';
+        foreach ($listGroup as $group) {
+            $groupOutput .= '"'.$group['permission_group'].'",';
+        }
+        // assign data
+        $this->assign('portals', $listPortal->pluck('portal_nm', 'id'));
+        $this->assign('defaultPortalSelected', $listPortal->first()->id);
+        $this->assign('groupOutput', rtrim($groupOutput,','));
+        // display page
+        return $this->displayPage();
+    }
+
+    // getlist menu by portal
+    public function getListMenu(MenuRepositories $menuRepositories, Request $request)
+    {
+        // cek apakah ajax request
+        if ($request->ajax()){
+            // cek data param
+            if(!$request->has('portal_id') || empty($request->portal_id)){
+                return response()->json(['message' => 'Portal ID harus diisi', 'status' => 'failed']);
+            }
+            // get data
+            $listMenu = $menuRepositories->getMenuSelectByPortal($request->portal_id, 0, '');
+            return response()->json(['list' => $listMenu, 'status' => 'success']);
+        }
+        // default response
+        return response()->json(['message' => 'Gagal mengambil data menu', 'status' => 'failed']);
+    }
+
+    public function store(PermissionRequest $request)
+    {
+        if($request->permission_type == 'basic'){
+            $permission = $this->repositories->createPermission($request->all());
+            if($permission){
+                // cek menu
+                if($request->has('menu_id')){
+                    // attach menu
+                    foreach ($request->menu_id as $menu) {
+                        $permission->menu()->attach($menu);
+                    }
+                }
+                // set notifikasi success
+                $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah permission.']);
             }else{
-                $listMenu[$key]->check_all = false;
+                // set notifikasi error
+                $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah permission.']);
+            }
+        }else{
+            $crud = explode(',', $request->crud_selected);
+            if (count($crud) > 0) {
+                foreach ($crud as $x) {
+                    // set params
+                    $slug         = strtolower($x) . '-' . strtolower($request->resource);
+                    $permission_nm = ucwords($x . " " . $request->resource);
+                    $description  = "Memperbolkehkan usern untuk " . strtoupper($x) . ' a ' . ucwords($request->resource);
+                    $params = [
+                        'portal_id' => $request->portal_id,
+                        'permission_nm' => $permission_nm,
+                        'permission_slug' => $slug,
+                        'permission_group' => $request->permission_group,
+                        'permission_desc' => $description
+                    ];
+                    // proses create
+                    $permission = $this->repositories->createPermission($params);
+                    // cek menu
+                    if($request->has('menu_id')){
+                        // attach menu
+                        foreach ($request->menu_id as $menu) {
+                            $permission->menu()->attach($menu);
+                        }
+                    }
+                    // set notifikasi success
+                    $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah permission.']);
+                }
             }
         }
-        //assign data
-        $this->assign('role', $role);
-        $this->assign('listMenu', $listMenu );
-        // display page
-        return $this->displayPage();
+        // default return
+        return redirect()->route('manage.permission.create');
     }
 
-    public function update(Role $role, Request $request)
+    public function show()
     {
-        // set rule page
-        $this->setRule('u');
-        // proses update permissions
-        $this->permissionRepositories->update($request->all(),$role);
-        flash('Berhasil mengupdate permissions.')->success()->important();
-        // redirect page
-        return redirect('base/permissions/'.$role->id);
+        
     }
 }
