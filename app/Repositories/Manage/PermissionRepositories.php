@@ -24,6 +24,18 @@ class PermissionRepositories
                ->paginate($perPage);
     }
 
+    // get group availible
+    public function getGroupAvailible($portalId)
+    {
+        return Permission::select('permission_group')->where('portal_id', $portalId)->groupBy('permission_group')->get();
+    }
+
+    // get by id
+    public function getPermissionById($permissionId)
+    {
+        return Permission::findOrFail($permissionId);
+    }
+
     // proses insert
     public function createPermission($params)
     {
@@ -31,9 +43,29 @@ class PermissionRepositories
         return Permission::create($params);
     }
 
-    // get group availible
-    public function getGroupAvailible($portalId)
+    // update permission
+    public function updatePermission($permissionId, Request $request)
     {
-        return Permission::select('permission_group')->where('portal_id', $portalId)->groupBy('permission_group')->get();
+        // get permission
+        $permission = $this->getPermissionById($permissionId);
+        // update
+        if($permission->update($request->except('_method', '_token', 'menu_id'))){
+            if($request->has('menu_id')){
+                $permission->menu()->sync($request->menu_id);
+            }
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    // delete proses
+    public function delete($permissionId)
+    {
+        // get permission
+        $permission = $this->getPermissionById($permissionId);
+        // run delete
+        return $permission->delete();
     }
 }

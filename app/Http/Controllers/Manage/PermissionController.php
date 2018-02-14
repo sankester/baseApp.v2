@@ -17,6 +17,7 @@ class PermissionController extends BaseAdminController
 
     public function __construct( PermissionRepositories $permissionRepositories, Request $request)
     {
+        // parent controller
         parent::__construct($request);
         $this->repositories = $permissionRepositories;
     }
@@ -29,6 +30,7 @@ class PermissionController extends BaseAdminController
         // load js
         $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
         $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
+        $this->loadJs('js/base/manage/permission/index.js');
         //set page title
         $this->page->setTitle('Manajemen Permission');
         // get search data
@@ -70,6 +72,7 @@ class PermissionController extends BaseAdminController
         return redirect()->route('manage.permission.index');
     }
 
+    // show form create
     public function create(PortalRepositories $portalRepositories)
     {
         // set page template
@@ -78,7 +81,7 @@ class PermissionController extends BaseAdminController
         $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
         $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
         $this->loadJs('themes/general/jQuery-Autocomplete-master/dist/jquery.autocomplete.min.js');
-        $this->loadJs('js/base/manage/menu/add.js');
+        $this->loadJs('js/base/manage/permission/create.js');
         $this->loadJs('js/app.js');
         //set page title
         $this->page->setTitle('Tambah Permission');
@@ -97,25 +100,10 @@ class PermissionController extends BaseAdminController
         return $this->displayPage();
     }
 
-    // getlist menu by portal
-    public function getListMenu(MenuRepositories $menuRepositories, Request $request)
-    {
-        // cek apakah ajax request
-        if ($request->ajax()){
-            // cek data param
-            if(!$request->has('portal_id') || empty($request->portal_id)){
-                return response()->json(['message' => 'Portal ID harus diisi', 'status' => 'failed']);
-            }
-            // get data
-            $listMenu = $menuRepositories->getMenuSelectByPortal($request->portal_id, 0, '');
-            return response()->json(['list' => $listMenu, 'status' => 'success']);
-        }
-        // default response
-        return response()->json(['message' => 'Gagal mengambil data menu', 'status' => 'failed']);
-    }
-
+    // proses insert
     public function store(PermissionRequest $request)
     {
+        // cek permission type
         if($request->permission_type == 'basic'){
             $permission = $this->repositories->createPermission($request->all());
             if($permission){
@@ -168,5 +156,74 @@ class PermissionController extends BaseAdminController
     public function show()
     {
         
+    }
+
+    // show form edit
+    public function edit(MenuRepositories $menuRepositories, $permissionId)
+    {
+        // set page template
+        $this->setTemplate('manage.permission.edit');
+        // load js
+        $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
+        $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
+        $this->loadJs('themes/general/jQuery-Autocomplete-master/dist/jquery.autocomplete.min.js');
+        $this->loadJs('js/base/manage/permission/edit.js');
+        //set page title
+        $this->page->setTitle('Edit Permission');
+        // cek data
+        $permission = $this->repositories->getPermissionById($permissionId);
+        // get data
+        $listGroup = $this->repositories->getGroupAvailible( $permission->portal_id)->toArray();
+        $groupOutput  = '';
+        foreach ($listGroup as $group) {
+            $groupOutput .= '"'.$group['permission_group'].'",';
+        }
+        if(! empty($permission->menu()->get()->toArray())){
+            // get menu
+            $lisMenu = $menuRepositories->getMenuSelectByPortal($permission->portal_id, '0','');
+            $listSelectedMenu = $permission->menu()->get()->all();
+            $selectedMenu     = [];
+            foreach ($listSelectedMenu as $menu){
+                array_push($selectedMenu, $menu->id);
+            }
+            // assign menu
+            $this->assign('listMenu', $lisMenu);
+            $this->assign('selectedMenu', $selectedMenu);
+        }
+        // assign data
+        $this->assign('permission', $permission);
+        $this->assign('groupOutput', rtrim($groupOutput,','));
+        // display page
+        return $this->displayPage();
+    }
+
+    // proses update
+    public function update(PermissionRequest $request, $permissionId)
+    {
+        // proses update
+        if($this->repositories->updatePermission($permissionId,$request)){
+            // set notifikasi success
+            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil edit permission.']);
+        }else{
+            // set notifikasi error
+            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal edit permission.']);
+        }
+        // redirect
+        return redirect()->route('manage.permission.edit', $permissionId);
+    }
+
+    // proses hapus
+    public function destroy($permissionId, PermissionRequest $request)
+    {
+        // cek apakah ajax request
+        if ($request->ajax()){
+            // proses hapus portal dari database
+            if($this->repositories->delete($permissionId)){
+                // set response
+                return response(['message' => 'Berhasil menghapus portal.', 'status' => 'success']);
+            }
+        }
+        // default response
+        return response(['message' => 'Gagal menghapus portal', 'status' => 'failed']);
     }
 }

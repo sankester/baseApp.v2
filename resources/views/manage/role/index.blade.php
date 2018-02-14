@@ -74,9 +74,9 @@
         @else
             <div class="row fx-element-overlay">
                 @foreach($listRole as $role)
-                    <div class="col-md-12 col-lg-3" id="{{ $role->id }}">
-                        <div class="box box-default">
-                            <div class="fx-card-item">
+                    <div class="col-md-12 col-lg-4" id="{{ $role->id }}">
+                        <div class="box box-default ">
+                            <div class="fx-card-item bl-3 border-success h-30">
                                 <div class="box-body fx-overlay-1">
                                     <h3 class="text-left">{{ $role->role_nm }}</h3>
                                     <p class="box-text text-left">{{ $role->role_desc }}</p>

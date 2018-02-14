@@ -19,20 +19,34 @@
                 <h3 class="page-header">
                     List Menu {{ $portal->portal_nm }}
                     <div class="box-controls pull-right">
-                        <a class="btn btn-sm btn-primary" href="{{ route('manage.menu.create', $portal->id ) }}"><i class="mdi mdi-plus mr-5"></i> Tambah Menu</a>
+                        <a class="btn btn-sm btn-default" href="{{ route('manage.menu.index') }}"><i class="mdi mdi-chevron-left mr-5"></i> Kembali</a>
+                        <a class="btn btn-sm btn-primary mr-5" href="{{ route('manage.menu.create', $portal->id ) }}"><i class="mdi mdi-plus mr-5"></i> Tambah Menu</a>
                     </div>
                 </h3>
             </div>
-            <div class="col-md-12">
-                <!-- Default box -->
-                <div class="box">
-                    <div class="box-body">
-                        <div class="myadmin-dd dd col-md-12" id="nestable" data-url = '{{ route('manage.menu.sortable', $portal->id) }}' data-token="{{ csrf_token() }}">
-                            {!! $htmlMenu !!}
+            @if(empty($htmlMenu))
+                <div class="col-md-12">
+                    <div class="error-page empty-data">
+                        <div class="error-content">
+                            <div class="container text-center">
+                                <h2 class="headline text-muted"><i class="mdi mdi-menu "></i></h2>
+                                <h3 class="margin-top-0">Menu Belum Tersedia !</h3>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @else
+                <div class="col-md-12">
+                    <!-- Default box -->
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="myadmin-dd dd col-md-12" id="nestable" data-url = '{{ route('manage.menu.sortable', $portal->id) }}' data-token="{{ csrf_token() }}">
+                                {!! $htmlMenu !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 @endsection

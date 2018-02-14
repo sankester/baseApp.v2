@@ -26,14 +26,15 @@ Route::prefix('base')->group(function () {
     // role
     Route::resource('manage/role', 'Manage\RoleController', ['as' => 'manage']);
     Route::post('/manage/role/search', 'Manage\RoleController@search')->name('manage.role.search');
+    Route::post('/manage/role/getListPermission', 'Manage\RoleController@getListPermissionAjax')->name('manage.role.getPermission');
     // menu
     Route::resource('manage/menu', 'Manage\MenuController', ['except' => ['create', 'edit', 'update'],'as' => 'manage']);
     Route::get('/manage/menu/{portal}/create', 'Manage\MenuController@create')->name('manage.menu.create');
     Route::get('/manage/menu/{portal}/{menu}/edit', 'Manage\MenuController@edit')->name('manage.menu.edit');
     Route::patch('/manage/menu/{menu}', 'Manage\MenuController@update')->name('manage.menu.update');
     Route::put('/manage/menu/{portal}/sortable', 'Manage\MenuController@sortable')->name('manage.menu.sortable');
+    Route::post('/manage/menu/getListMenu', 'Manage\MenuController@getListMenu')->name('manage.menu.getlistmenu');
     // permission
     Route::resource('manage/permission', 'Manage\PermissionController', ['as' => 'manage']);
     Route::post('/manage/permission/search', 'Manage\PermissionController@search')->name('manage.permission.search');
-    Route::post('/manage/permission/getListMenu', 'Manage\PermissionController@getListMenu')->name('manage.permission.getlistmenu');
 });

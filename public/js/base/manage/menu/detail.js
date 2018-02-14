@@ -6,7 +6,6 @@ $(document).ready(function () {
         var data_url = $(this).attr('delete-url');
         var data_token = $(this).attr('delete-token');
         var data_id= $(this).attr('delete-id');
-        var dataElement = $(this);
         swal({
                 title: "Apa anda yakin ?",
                 text: "Menghapus menu ini juga akan menghapus data yang berhubungan",

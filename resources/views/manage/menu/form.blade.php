@@ -143,7 +143,7 @@
 </div>
 <!-- /.box-body -->
 <div class="box-footer clearfix col-md-12">
-    <button type="submit" class="btn btn-success pull-right"><i class="{{ $icon }} mr-5"></i> {{ $textButton }}</button>
+    <button type="submit" class="btn btn-success pull-right"><i class="{{ $iconButton }} mr-5"></i> {{ $textButton }}</button>
     <button type="reset" class="btn btn-default pull-right mr-10"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
 </div>
 <!-- /.box-footer -->

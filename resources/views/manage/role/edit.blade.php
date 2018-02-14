@@ -9,7 +9,7 @@
             <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Home</a></li>
             <li class="breadcrumb-item"><a href="#">Manage</a></li>
             <li class="breadcrumb-item"><a href="{{ route('manage.role.index') }}">Role</a></li>
-            <li class="breadcrumb-item active">Tambah Data</li>
+            <li class="breadcrumb-item active">Edit Data</li>
         </ol>
     </section>
     <!-- Main content -->
@@ -20,7 +20,7 @@
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title">
-                            Form Tambah Role
+                            Form Edit Role
                         </h3>
                         <div class="box-controls pull-right">
                             <a class="btn btn-sm btn-default" href="{{ route('manage.role.index') }}"><i class="mdi mdi-chevron-left mr-5"></i> Kembali</a>
@@ -31,8 +31,8 @@
                     @include('layouts.notification.base_notification')
                     {{--end include notification--}}
                     <!-- form start -->
-                    {!! Form::model($role = new \App\Model\Manage\Role(),['route' => 'manage.role.store', 'class' => 'validation-wizard wizard-circle', 'id' => 'tambah-role']) !!}
-                        @include('manage.role.form',['textButton' => 'Simpan', 'icon' => 'mdi mdi-plus'])
+                    {!! Form::model($role,['method' => 'PATCH' , 'route' => ['manage.role.update', $role->id], 'class' => 'validation-wizard wizard-circle', 'id' => 'tambah-role']) !!}
+                        @include('manage.role.form',['textButton' => 'Simpan', 'icon' => 'mdi mdi-pencil'])
                     {!! Form::close() !!}
                     </div>
                 </div>

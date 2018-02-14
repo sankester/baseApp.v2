@@ -22,6 +22,11 @@ class Permission extends Model
     // set relation menu
     public function menu()
     {
-        return $this->belongsToMany('App\Model\Manage\Menu','menu_permission','permission_id','menu_id');
+        return $this->belongsToMany('App\Model\Manage\Menu','menu_permission','permission_id','menu_id')
+                    ->withPivot('menu_id');
+    }
+
+    public function portal(){
+        return $this->belongsTo('App\Model\Manage\Portal');
     }
 }

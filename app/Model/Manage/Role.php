@@ -22,6 +22,12 @@ class Role extends Model
     // set relation to user
     public function users()
     {
-        return $this->belongsToMany('App\Model\Manage\UserLogin', 'user_role');
+        return $this->belongsToMany('App\Model\Manage\UserLogin', 'user_role', 'role_id', 'user_login_id');
+    }
+
+    // set relation to permission
+    public function permission()
+    {
+        return $this->belongsToMany('App\Model\Manage\Permission', 'role_permission', 'role_id', 'permission_id');
     }
 }

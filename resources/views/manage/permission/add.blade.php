@@ -8,7 +8,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Home</a></li>
             <li class="breadcrumb-item"><a href="#">Manage</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('manage.permission.index') }}">Role</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('manage.permission.index') }}">Permission</a></li>
             <li class="breadcrumb-item active">Tambah Data</li>
         </ol>
     </section>
@@ -30,7 +30,7 @@
                 @include('layouts.notification.base_notification')
                 {{--end include notification--}}
                 <!-- form start -->
-                    {!! Form::model($permission = new \App\Model\Manage\Permission(),['route' => 'manage.permission.store', 'class' => 'form-horizontal form-element','enctype'=>"multipart/form-data", 'id' => 'tambah-permission']) !!}
+                    {!! Form::model($permission = new \App\Model\Manage\Permission(),['route' => 'manage.permission.store', 'class' => 'form-horizontal form-element', 'id' => 'tambah-permission']) !!}
                     <div class="box-body">
                         <div class="form-group row {{ $errors->has('portal_id') ? ' has-error' : '' }}">
                             {!! Form::label('portal_id','Nama Portal',['class' => 'col-md-3 control-label']) !!}
@@ -149,9 +149,9 @@
                         <div class="form-group row {{ $errors->has('is_assign_menu') ? ' has-error' : '' }}">
                             {!! Form::label('is_assign_menu','Tambahkan ke menu',['class' => 'col-sm-3 control-label']) !!}
                             <div class="col-sm-9">
-                                {!! Form::radio('is_assign_menu', 'iya', false, ['class'=>'radio-col-teal', 'id' => 'is-assign-menu', 'data-url' => route('manage.permission.getlistmenu'), 'data-token' => csrf_token() ]) !!}
+                                {!! Form::radio('is_assign_menu', 'iya', false, ['class'=>'radio-col-teal', 'id' => 'is-assign-menu', 'data-url' => route('manage.menu.getlistmenu'), 'data-token' => csrf_token() ]) !!}
                                 <label for="is-assign-menu">Iya</label>
-                                {!! Form::radio('is_assign_menu', 'tidak', true, ['class'=>'radio-col-teal', 'id' => 'no-assign-menu', 'data-url' => route('manage.permission.getlistmenu'), 'data-token' => csrf_token()]) !!}
+                                {!! Form::radio('is_assign_menu', 'tidak', true, ['class'=>'radio-col-teal', 'id' => 'no-assign-menu', 'data-url' => route('manage.menu.getlistmenu'), 'data-token' => csrf_token()]) !!}
                                 <label for="no-assign-menu">Tidak</label>
                                 @if ($errors->has('is_assign_menu'))
                                     <span class="help-block">

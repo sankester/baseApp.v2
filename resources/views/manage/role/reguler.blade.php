@@ -1,10 +1,9 @@
-<!-- Step 1 -->
-<h6>Role Data</h6>
-<section>
+<!-- /.box-body -->
+<div class="box-body">
     <div class="form-group row {{ $errors->has('portal_id') ? ' has-error' : '' }}">
         {!! Form::label('portal_id','Nama Portal',['class' => 'col-md-3 control-label']) !!}
         <div class="col-sm-8">
-            {!! Form::select('portal_id', $listPortal , null, ['class' => 'form-control select2 select2-hidden-accessible pr-0', 'style' => 'width: 100%', "tabindex" => "-1" , "aria-hidden" => "true", 'data-url' => route('manage.menu.getlistmenu'), 'data-url-permission' => route('manage.role.getPermission'),'data-token' => csrf_token() ] ); !!}
+            {!! Form::select('portal_id', $listPortal , null, ['class' => 'form-control select2 select2-hidden-accessible pr-0', 'style' => 'width: 100%', "tabindex" => "-1" , "aria-hidden" => "true"] ); !!}
             @if ($errors->has('portal_id'))
                 <span class="help-block">
                     <strong>{{ $errors->first('portal_id') }}</strong>
@@ -45,25 +44,10 @@
             @endif
         </div>
     </div>
-</section>
-<!-- Step 2 -->
-<h6>Role Permission</h6>
-<section>
-    <div class="row" id="list-permission">
-        <table class="table table-responsive">
-            <tbody>
-            <tr>
-                <th width="5%" class="text-center">
-                    <div class="checkbox">
-                        <input type="checkbox" id="checked-all-menu" class="chk-col-green checked-all-menu">
-                        <label for="checked-all-menu"></label>
-                    </div>
-                </th>
-                <th width="20%" class="text-center">Menu</th>
-                <th width="80%" class="text-center">Permission</th>
-            </tr>
-            {!!  $permissionMenuHtml !!}
-            </tbody>
-        </table>
-    </div>
-</section>
+</div>
+<!-- /.box-body -->
+<div class="box-footer clearfix col-md-12">
+    <button type="submit" class="btn btn-success pull-right"><i class="{{ $icon }} mr-5"></i> {{ $textButton }}</button>
+    <button type="reset" class="btn btn-default pull-right mr-10"><i class="mdi mdi-refresh mr-5"></i> Reset</button>
+</div>
+<!-- /.box-footer -->

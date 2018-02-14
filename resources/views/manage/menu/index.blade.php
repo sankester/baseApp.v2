@@ -34,7 +34,7 @@
                 @foreach($portals as $portal)
                 <div class="col-md-12 col-lg-4" id="{{ $portal->id }}">
                     <div class="box box-default">
-                        <div class="fx-card-item">
+                        <div class="fx-card-item bl-3 border-success h-30">
                             <div class="box-body fx-overlay-1">
                                 <h3 class="text-left">{{ $portal->portal_nm }}</h3>
                                 <p class="box-text text-left">{{ $portal->site_desc }}</p>

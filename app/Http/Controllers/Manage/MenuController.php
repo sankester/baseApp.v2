@@ -179,4 +179,23 @@ class MenuController extends BaseAdminController
         // default response
         return response(['message' => 'Gagal menghapus menu', 'status' => 'failed']);
     }
+
+    // getlist menu by portal
+    public function getListMenu(Request $request)
+    {
+        // cek apakah ajax request
+        if ($request->ajax()){
+            // cek data param
+            if(!$request->has('portal_id') || empty($request->portal_id)){
+                return response()->json(['message' => 'Portal ID harus diisi', 'status' => 'failed']);
+            }
+            // cek by index
+            $index = ($request->has('index')) ? $request->index : 'id';
+            // get data
+            $listMenu = $this->repositories->getMenuSelectByPortal($request->portal_id, 0, '', $index);
+            return response()->json(['list' => $listMenu, 'status' => 'success']);
+        }
+        // default response
+        return response()->json(['message' => 'Gagal mengambil data menu', 'status' => 'failed']);
+    }
 }

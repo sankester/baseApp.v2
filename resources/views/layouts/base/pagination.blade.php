@@ -2,9 +2,13 @@
     <ul class="pagination pagination-sm no-margin pull-right d-none d-sm-flex">
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
-            <li class="disabled"><span> Pertama </span></li>
+            <li class="disabled page-item">
+                <a class="page-link" href="#">Pertama</a>
+            </li>
         @else
-            <li><a href="{{ $paginator->previousPageUrl() }}" rel="prev">Sebelumnya </a></li>
+            <li class="page-item">
+                <a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev">Sebelumnya</a>
+            </li>
         @endif
 
         {{-- Pagination Elements --}}
@@ -18,9 +22,13 @@
             @if (is_array($element))
                 @foreach ($element as $page => $url)
                     @if ($page == $paginator->currentPage())
-                        <li class="current"><span>{{ $page }}</span></li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">{{ $page }}</a>
+                        </li>
                     @else
-                        <li><a href="{{ $url }}">{{ $page }}</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
                     @endif
                 @endforeach
             @endif
@@ -28,9 +36,13 @@
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <li><a href="{{ $paginator->nextPageUrl() }}" rel="next">Selanjutnya</a></li>
+            <li class="page-item">
+                <a class="page-link" href="{{ $paginator->nextPageUrl() }}"  rel="next">Selanjutnya</a>
+            </li>
         @else
-            <li class="disabled"><span>Akhir</span></li>
+            <li class=" disabled page-item">
+                <a class="page-link" href="#"  rel="next">Akhir</a>
+            </li>
         @endif
     </ul>
 @endif

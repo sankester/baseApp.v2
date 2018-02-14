@@ -27,10 +27,10 @@
                             <a class="btn btn-sm btn-default" href="{{ route('manage.menu.show', $portal->id) }}"><i class="mdi mdi-chevron-left mr-5"></i> Kembali</a>
                         </div>
                     </div>
-                {{--include notification--}}
-                @include('layouts.notification.base_notification')
-                {{--end include notification--}}
-                <!-- form start -->
+                    {{--include notification--}}
+                    @include('layouts.notification.base_notification')
+                    {{--end include notification--}}
+                    <!-- form start -->
                     {!! Form::model($menu ,['method' => 'PATCH', 'route' => ['manage.menu.update', $menu->id ], 'class' => 'form-horizontal form-element', 'id' => 'form-menu']) !!}
                     @include('manage.menu.form',['textButton' => 'Simpan', 'iconButton' => 'mdi mdi-pencil'])
                     {!! Form::close() !!}

@@ -14,11 +14,7 @@ use Illuminate\Http\Request;
 
 class RoleRepositories
 {
-    /**
-     * Mengambil list data role dengan limit dan pagination
-     * @param $limit
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
+    // get role paginate
     public function getListPaginate($limit)
     {
         return Role::paginate($limit);
@@ -30,10 +26,12 @@ class RoleRepositories
         return Role::where('portal_id', $portal_id)->paginate($per_page);
     }
 
-    /**
-     * Mengambil semu data role untuk select box
-     * @return \Illuminate\Support\Collection : nama role dan id
-     */
+    public function getRoleById($roleId)
+    {
+        return Role::findOrFail($roleId);
+    }
+
+    // get all role select
     public function getAllSelect()
     {
         $role_data = [];
@@ -60,7 +58,12 @@ class RoleRepositories
     public function createRole(Request $request)
     {
         // proses create
-        if(Role::create($request->all())){
+        $role = Role::create($request->except('permission_id'));
+        if($role){
+            // syncrone permission
+            if($request->has('permission_id')){
+                $role->permission()->sync($request->permission_id);
+            }
             // return true
             return true;
         }
@@ -68,26 +71,28 @@ class RoleRepositories
         return false;
     }
 
-    /**
-     * Proses mengupdate data portal di database
-     * @param $params
-     * @param Role $role
-     * @return bool
-     * @internal param $id
-     */
-    public function updateRole($params, Role $role){
-        return $role->update($params);
+    // proses update
+    public function updateRole(Request $request, $roleId){
+        // get role
+        $role = $this->getRoleById($roleId);
+        if($role){
+            // syncrone permission
+            if($request->has('permission_id')){
+                $role->permission()->sync($request->permission_id);
+            }
+            // return true
+            return true;
+        }
+        // default return
+        return false;
     }
 
-    /**
-     * Proses menghapus  role dari database
-     * @param Role $role
-     * @return bool|null
-     * @throws \Exception
-     * @internal param $id
-     */
-    public function deleteRole(Role $role)
+    // proses delete
+    public function deleteRole($roleId)
     {
-        return  $roleDelete = $role->delete();
+        // get role
+        $role = $this->getRoleById($roleId);
+        // proses delete
+        return $role->delete();
     }
 }

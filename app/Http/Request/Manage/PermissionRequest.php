@@ -57,27 +57,11 @@ class PermissionRequest extends FormRequest
             case 'PATCH':
             {
                 $rules = [
-                    'portal_id'     =>  'required|max:10',
-                    'permission_type'     =>  'required',
+                    'permission_nm'  => 'required|min:1|max:191',
+                    'permission_slug'  => 'required|min:1|max:191',
+                    'permission_group'  => 'required|min:1|max:191',
+                    'permission_desc'  => 'required|min:1|max:191',
                 ];
-                if ($this->has('permission_nm')){
-                    $rules['permission_nm']  = 'required|min:1|max:191';
-                }
-                if ($this->has('permission_slug')){
-                    $rules['permission_slug']  = 'required|min:1|max:191';
-                }
-                if ($this->has('permission_group')){
-                    $rules['permission_group']  = 'required|min:1|max:191';
-                }
-                if ($this->has('permission_desc')){
-                    $rules['permission_desc']  = 'required|min:1|max:191';
-                }
-                if ($this->has('resource')){
-                    $rules['resource']  = 'required|min:1|max:191|alpha';
-                }
-                if ($this->has('crud_selected')){
-                    $rules['crud_selected']  = 'required|min:1|max:191';
-                }
                 break;
             }
             default:break;

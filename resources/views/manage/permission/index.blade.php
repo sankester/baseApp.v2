@@ -84,13 +84,13 @@
                                         </tr>
                                         @foreach($listPermission as $key => $permission)
                                             <tr>
-                                                <td class="text-center">{{ (( ($listPermission->currentPage() or 0)  - 1 ) * $listPermission->perPage() ) + ($key+1) }}</td>
+                                                <td class="text-center">{!! (( ($listPermission->currentPage())  - 1 ) * $listPermission->perPage() ) + ($key+1) !!} </td>
                                                 <td>{{ $permission->permission_nm }}</td>
                                                 <td>{{ $permission->permission_group }}</td>
                                                 <td>{{ $permission->permission_slug }}</td>
                                                 <td>
                                                     <a href="{{ route('manage.permission.edit', $permission->id) }}" class="btn btn-info btn-sm mr-5"><i class="mdi mdi-pencil"></i></a>
-                                                    <a href="#" class="btn btn-danger btn-sm delete-permission" data-id="1" data-url="{{ route('manage.permission.destroy', $permission->id) }}" data-token="{{ csrf_token() }}"><i class="mdi mdi-delete"></i></a>
+                                                    <a href="#" class="btn btn-danger btn-sm delete-permission"  data-url="{{ route('manage.permission.destroy', $permission->id) }}" data-token="{{ csrf_token() }}"><i class="mdi mdi-delete"></i></a>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -101,7 +101,7 @@
                                             <div class="col-md-6">
                                                 <div class="pull-left">
                                                     <p>
-                                                        Halaman {{ $listPermission->currentPage() }} dari {{ $listPermission->total() }} Halaman
+                                                        Halaman {{ $listPermission->currentPage() }} dari {{ $listPermission->lastPage() }} Halaman
                                                     </p>
                                                 </div>
                                             </div>

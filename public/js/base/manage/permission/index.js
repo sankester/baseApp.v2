@@ -2,18 +2,18 @@
  * Created by achva on 20/08/2017.
  */
 $(document).ready(function () {
-    $('.delete-portal').on('click', function () {
+    $('.delete-permission').on('click', function () {
         var data_url = $(this).attr('data-url');
         var data_token = $(this).attr('data-token');
-        var data_id= $(this).attr('data-id');
+        var dataElement = $(this);
         swal({
                 title: "Apa anda yakin ?",
-                text: "Menghapus portal ini mungkin akan menghapus data yang berhubungan",
+                text: "Menghapus permission ini mungkin akan menghapus data yang berhubungan",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#FF7043",
                 cancelButtonColor: "#ddd",
-                confirmButtonText: "Iya, hapus portal.",
+                confirmButtonText: "Iya, hapus permission.",
                 cancelButtonText: "Cancel ",
                 closeOnConfirm: false,
                 closeOnCancel: false,
@@ -27,8 +27,7 @@ $(document).ready(function () {
                         data: {_method: 'DELETE', _token: data_token},
                         success: function (data) {
                             if(data.status == 'success'){
-                                console.log($(data_id));
-                                $('#'+data_id).remove();
+                                $(dataElement).parent().parent().remove();
                                 swal({
                                         title: data.status,
                                         text: data.message,

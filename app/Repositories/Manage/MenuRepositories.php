@@ -11,6 +11,7 @@ namespace App\Repositories\Manage;
 use App\Model\Manage\Menu;
 use App\Model\Manage\Portal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -20,19 +21,61 @@ use Illuminate\Support\Facades\Auth;
 class MenuRepositories
 {
     // ambil data menu berdasarkan portal format object
-    public function getDataMenuByPortal($portalID, $parentID)
+    public function getDataMenuByPortal($portalID, $parentID, $returnMenu = [], $indent = '')
     {
         $listMenu  = Menu::where('portal_id', $portalID)->where('parent_id', $parentID)->get();
         if (!empty($listMenu)) {
             foreach ($listMenu as $key => $menu) {
+                $menu->menu_title = $indent . $menu->menu_title;
+                $returnMenu[] = $menu->load('permission');
                 $childs = Menu::where('parent_id' , $menu->id)->get();
                 if (!empty($childs)) {
-                    $childs = $this->getDataMenuByPortal($portalID, $menu->id);
-                    $menu->setChildMenu($childs);
+                    $indentChild = $indent.' --- ';
+                    $returnMenu = $this->getDataMenuByPortal($portalID, $menu->id, $returnMenu, $indentChild);
                 }
             }
         }
-        return $listMenu();
+        return $returnMenu;
+    }
+
+    // get data menu ajax untuk tambah permission role
+    public function getDataMenuByPortalAssignPermission($portalID, $parentID, $activePermission = null ,$returnMenu = '', $indent = '')
+    {
+        $listMenu  = Menu::where('portal_id', $portalID)->where('parent_id', $parentID)->get();
+        if (!empty($listMenu)) {
+            foreach ($listMenu as $key => $menu) {
+                // set title
+                $menu->menu_title = $indent . $menu->menu_title;
+                $menu = $menu->load('permission');
+                $returnMenu .= '<tr><td><div class="checkbox">';
+                // cek apakah ada permission
+                if(! $menu->permission->isEmpty() ){
+                    $returnMenu .= '<input  type="checkbox" id="'.$menu->id.'" class="chk-col-green r-menu checked-all " value="'.$menu->id.'">';
+                    $returnMenu .= '<label for="'.$menu->id.'"></label>';
+                }
+                $returnMenu .= '</div></td><td>'.$menu->menu_title.'</td><td><div class="checkbox">';
+                foreach ($menu->permission as $access){
+                    $checked = '';
+                    if(! is_null($activePermission)){
+                        foreach ($activePermission as $active) {
+                            if($access->id == $active->id){
+                                $checked = 'checked';
+                            }
+                        }
+                    }
+                    $returnMenu .= '<input name="permission_id[]" type="checkbox" id="p-'.$access->id.'" class="chk-col-green r-'.$menu->id.' r-menu ml-10" value="'.$access->id.'"'.$checked.'>';
+                    $returnMenu .= '<label for="p-'.$access->id.'" class="mr-10">'.$access->permission_nm.'</label>';
+                }
+                $returnMenu .= '</div></td></tr>';
+                //get child
+                $childs = Menu::where('parent_id' , $menu->id)->get();
+                if (!empty($childs)) {
+                    $indentChild = $indent.' --- ';
+                    $returnMenu .= $this->getDataMenuByPortalAssignPermission($portalID, $menu->id, $activePermission , $html = '' , $indentChild);
+                }
+            }
+        }
+        return $returnMenu;
     }
 
     // ambil list menu nastable
@@ -85,7 +128,7 @@ class MenuRepositories
         }
     }
 
-    // ambil data menu berdasarkan portal
+    // ambil data menu berdasarkan portal array
     public function getMenuByPortal($portalId, $parentId, $indent, $navViews = array())
     {
         $portal = Portal::findOrFail($portalId);
@@ -105,17 +148,17 @@ class MenuRepositories
     }
 
     // get menu select box
-    public function getMenuSelectByPortal($portalId, $parentId, $indent, $navViews = array())
+    public function getMenuSelectByPortal($portalId, $parentId, $indent, $index = 'id', $navViews = array())
     {
         $portal = Portal::findOrFail($portalId);
         $navs = $portal->menu()->where('parent_id', $parentId)->orderBy('menu_nomer', 'asc')->get()->toArray();
         if (!empty($navs)) {
             foreach ($navs as $key => $nav) {
                 $childs = $portal->menu()->where('parent_id', $nav['id'])->get()->toArray();
-                $navViews[$nav['id']] = $indent . $nav['menu_title'];;
+                $navViews[$nav[$index]] = $indent . $nav['menu_title'];;
                 if (!empty($childs)) {
                     $indentChilds = $indent . "--- ";
-                    $navViews =  $this->getMenuSelectByPortal($nav['portal_id'], $nav['id'], $indentChilds, $navViews);
+                    $navViews =  $this->getMenuSelectByPortal($nav['portal_id'], $nav['id'], $indentChilds, $index , $navViews);
                 }
             }
         }
