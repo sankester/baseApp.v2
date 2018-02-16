@@ -37,4 +37,7 @@ Route::prefix('base')->group(function () {
     // permission
     Route::resource('manage/permission', 'Manage\PermissionController', ['as' => 'manage']);
     Route::post('/manage/permission/search', 'Manage\PermissionController@search')->name('manage.permission.search');
+    // user
+    Route::resource('manage/user', 'Manage\UserController', ['as' => 'manage']);
+    Route::post('manage/user/search', 'Manage\UserController@search')->name('manage.user.search');
 });

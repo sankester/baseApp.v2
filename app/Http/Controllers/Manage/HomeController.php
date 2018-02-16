@@ -31,7 +31,7 @@ class HomeController extends BaseAdminController
         // set page header
         $this->setPageHeaderTitle('<span class="text-semibold">Home</span> - Dashboard');
         // assign
-        $user = $this->request->session()->get('role_active')->toArray();
+        $user = Auth::user()->with('userData')->first()->toArray();
         $this->assign('user', $user);
         // display page
         return $this->displayPage();

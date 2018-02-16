@@ -69,7 +69,7 @@ class MenuController extends BaseAdminController
         // set page title
         $this->page->setTitle('Tambah Menu');
         // get data
-        $portal = $portalRepositories->getPortalById($portalId);
+        $portal = $portalRepositories->getByID($portalId);
         $parentMenu  = $this->repositories->getMenuSelectByPortal($portalId, 0, '');
         // assign data
         $this->assign('portal' , $portal);
@@ -81,8 +81,8 @@ class MenuController extends BaseAdminController
     // proses simpan
     public function store(MenuRequest $request)
     {
-        // proses tambah portal ke database
-        if($this->repositories->createMenu($request)){
+        // proses tambah menu ke database
+        if($this->repositories->create($request)){
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah role.']);
         }else{
@@ -93,7 +93,7 @@ class MenuController extends BaseAdminController
         return redirect()->route('manage.menu.create', $request->portal_id);
     }
 
-    // tampilkan detail menu by portal
+    // tampilkan detail menu by menu
     public function show(PortalRepositories $portalRepositories, $portalId)
     {
         // set page template
@@ -103,7 +103,7 @@ class MenuController extends BaseAdminController
         $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
         $this->loadJs('js/base/manage/menu/detail.js');
         // get data
-        $portal = $portalRepositories->getPortalById($portalId);
+        $portal = $portalRepositories->getByID($portalId);
         // set page title
         $this->page->setTitle('Detail menu '.$portal->portal_nm);
         // get menu
@@ -139,8 +139,8 @@ class MenuController extends BaseAdminController
         // set page title
         $this->page->setTitle('Edit Menu');
         // get data
-        $portal = $portalRepositories->getPortalById($portalId);
-        $menu   = $this->repositories->getMenuById($menuId);
+        $portal = $portalRepositories->getByID($portalId);
+        $menu   = $this->repositories->getByID($menuId);
         $parentMenu  = $this->repositories->getMenuSelectByPortal($portalId, 0, '');
         // assign data
         $this->assign('portal' , $portal);
@@ -153,8 +153,8 @@ class MenuController extends BaseAdminController
     // proses update manu
     public function update(MenuRequest $request, $menuId)
     {
-        // proses edit portal ke database
-        if($this->repositories->updateMenu($request, $menuId)){
+        // proses edit menu ke database
+        if($this->repositories->update($request, $menuId)){
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil mengupdate role.']);
         }else{
@@ -170,8 +170,8 @@ class MenuController extends BaseAdminController
     {
         // cek apakah ajax request
         if ($request->ajax()){
-            // proses hapus portal dari database
-            if($this->repositories->deleteMenu($menuId)){
+            // proses hapus menu dari database
+            if($this->repositories->delete($menuId)){
                 // set response
                 return response(['message' => 'Berhasil menghapus menu.', 'status' => 'success']);
             }
@@ -180,7 +180,7 @@ class MenuController extends BaseAdminController
         return response(['message' => 'Gagal menghapus menu', 'status' => 'failed']);
     }
 
-    // getlist menu by portal
+    // getlist menu by menu
     public function getListMenu(Request $request)
     {
         // cek apakah ajax request

@@ -12,42 +12,32 @@ use App\Libs\LogLib\LogRepository;
 use App\Model\Manage\Permission;
 use App\Model\Portal;
 use App\Model\Role;
+use App\Repositories\Base\BaseRepositories;
 use Illuminate\Http\Request;
 
-class PermissionRepositories
+class PermissionRepositories extends BaseRepositories
 {
-    // grt list permission
-    public function getListPaginate($portalId, $permissionName, $perPage = 10)
-    {
-        return Permission::where('portal_id', $portalId)
-               ->where('permission_nm', 'like',$permissionName)
-               ->paginate($perPage);
-    }
+    // set model
+    protected $model = 'Manage\\Permission';
 
     // get group availible
     public function getGroupAvailible($portalId)
     {
-        return Permission::select('permission_group')->where('portal_id', $portalId)->groupBy('permission_group')->get();
-    }
-
-    // get by id
-    public function getPermissionById($permissionId)
-    {
-        return Permission::findOrFail($permissionId);
+        return $this->getModel()->select('permission_group')->where('portal_id', $portalId)->groupBy('permission_group')->get();
     }
 
     // proses insert
     public function createPermission($params)
     {
         // proses create
-        return Permission::create($params);
+        return $this->getModel()->create($params);
     }
 
     // update permission
     public function updatePermission($permissionId, Request $request)
     {
         // get permission
-        $permission = $this->getPermissionById($permissionId);
+        $permission = $this->getByID($permissionId);
         // update
         if($permission->update($request->except('_method', '_token', 'menu_id'))){
             if($request->has('menu_id')){
@@ -58,14 +48,5 @@ class PermissionRepositories
             return false;
         }
 
-    }
-
-    // delete proses
-    public function delete($permissionId)
-    {
-        // get permission
-        $permission = $this->getPermissionById($permissionId);
-        // run delete
-        return $permission->delete();
     }
 }

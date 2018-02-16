@@ -68,7 +68,7 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         // get list role user
-        $listRole = $user->roles()->get();
+        $listRole = $user->role()->get();
         // cek role apakah bisa mengakses portal
         $roleAccess = $this->cek_portal($listRole);
         // cek role akses

@@ -40,7 +40,7 @@ class PermissionController extends BaseAdminController
         $defaultPortal = (isset($search['portal_id'])) ? $search['portal_id'] : $listPortal->first()->id;
         $search['portal_id'] = (isset($search['portal_id'])) ? $search['portal_id'] : $listPortal->first()->id;
         $permissionName = (isset($search['permission_nm'])) ? '%'.$search['permission_nm'].'%' : '%';
-        $listPermission = $this->repositories->getListPaginate($defaultPortal,$permissionName);
+        $listPermission = $this->repositories->getListPaginate(10, ['portal_id', $defaultPortal], ['permission_nm','like',$permissionName]);
         // assign
         $this->assign('listPortal' , $listPortal->pluck('portal_nm', 'id'));
         $this->assign('search', $search);
@@ -171,7 +171,7 @@ class PermissionController extends BaseAdminController
         //set page title
         $this->page->setTitle('Edit Permission');
         // cek data
-        $permission = $this->repositories->getPermissionById($permissionId);
+        $permission = $this->repositories->getByID($permissionId);
         // get data
         $listGroup = $this->repositories->getGroupAvailible( $permission->portal_id)->toArray();
         $groupOutput  = '';
@@ -217,7 +217,7 @@ class PermissionController extends BaseAdminController
     {
         // cek apakah ajax request
         if ($request->ajax()){
-            // proses hapus portal dari database
+            // proses hapus permission dari database
             if($this->repositories->delete($permissionId)){
                 // set response
                 return response(['message' => 'Berhasil menghapus portal.', 'status' => 'success']);

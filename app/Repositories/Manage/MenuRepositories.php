@@ -10,25 +10,28 @@ namespace App\Repositories\Manage;
 
 use App\Model\Manage\Menu;
 use App\Model\Manage\Portal;
+use App\Repositories\Base\BaseRepositories;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Navs
  * @package App\Repositories\BaseApp
  */
-class MenuRepositories
+class MenuRepositories extends BaseRepositories
 {
+    // set model
+    protected $model = 'Manage\\Menu';
+
     // ambil data menu berdasarkan portal format object
     public function getDataMenuByPortal($portalID, $parentID, $returnMenu = [], $indent = '')
     {
-        $listMenu  = Menu::where('portal_id', $portalID)->where('parent_id', $parentID)->get();
+        $listMenu  = $this->getWhereMultiple(['portal_id',$portalID],['parent_id', $parentID]);
         if (!empty($listMenu)) {
             foreach ($listMenu as $key => $menu) {
                 $menu->menu_title = $indent . $menu->menu_title;
                 $returnMenu[] = $menu->load('permission');
-                $childs = Menu::where('parent_id' , $menu->id)->get();
+                $childs = $this->getModel()->where('parent_id' , $menu->id)->get();
                 if (!empty($childs)) {
                     $indentChild = $indent.' --- ';
                     $returnMenu = $this->getDataMenuByPortal($portalID, $menu->id, $returnMenu, $indentChild);
@@ -41,7 +44,8 @@ class MenuRepositories
     // get data menu ajax untuk tambah permission role
     public function getDataMenuByPortalAssignPermission($portalID, $parentID, $activePermission = null ,$returnMenu = '', $indent = '')
     {
-        $listMenu  = Menu::where('portal_id', $portalID)->where('parent_id', $parentID)->get();
+        // get list menu
+        $listMenu  = $this->getWhereMultiple(['portal_id',$portalID],['parent_id', $parentID]);
         if (!empty($listMenu)) {
             foreach ($listMenu as $key => $menu) {
                 // set title
@@ -68,7 +72,7 @@ class MenuRepositories
                 }
                 $returnMenu .= '</div></td></tr>';
                 //get child
-                $childs = Menu::where('parent_id' , $menu->id)->get();
+                $childs = $this->where('parent_id' , $menu->id);
                 if (!empty($childs)) {
                     $indentChild = $indent.' --- ';
                     $returnMenu .= $this->getDataMenuByPortalAssignPermission($portalID, $menu->id, $activePermission , $html = '' , $indentChild);
@@ -81,7 +85,7 @@ class MenuRepositories
     // ambil list menu nastable
     public function getMenuNestable($portalId, $parentId, $viewHtml = '')
     {
-        $listMenu  = Menu::where('portal_id', $portalId)->where('parent_id', $parentId)->orderBy('menu_nomer')->get();
+        $listMenu  = $this->getModel()->where('portal_id', $portalId)->where('parent_id', $parentId)->orderBy('menu_nomer')->get();
         $viewHtml  .= '<ol class="dd-list">';
         if (!empty($listMenu)) {
             foreach ($listMenu as $key => $menu) {
@@ -97,7 +101,7 @@ class MenuRepositories
                 $viewHtml  .= '</p>';
                 $viewHtml  .= '<p class="subtitle">'.$menu->menu_desc.'. &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; gunakan : '.$menu->active_st.'   &nbsp;&nbsp;&nbsp;|    &nbsp;&nbsp;&nbsp;tampilkan :  '.$menu->display_st.' </p>';
                 $viewHtml  .= '</div></div></div>';
-                $childs = Menu::where('parent_id' , $menu->id)->get();
+                $childs = $this->where('parent_id' , $menu->id)->toArray();
                 if ( count($childs) != 0) {
                     $viewHtml  .= $this->getMenuNestable($portalId, $menu->id);
                 }
@@ -113,7 +117,7 @@ class MenuRepositories
         // set start sort
         foreach ($listData as $key => $data) {
             // get manu
-            $menu = $this->getMenuById($data->id);
+            $menu = $this->getByID($data->id);
             // set param
             $params = [
                 'parent_id' => $defaultParent,
@@ -227,22 +231,15 @@ class MenuRepositories
         return $listParent;
     }
 
-    // ambil menu berdasarkan url
-    public static function getNavByUrl($url)
-    {
-        $menu = Menu::where('nav_url', '=', $url)->first();
-        return $menu;
-    }
-
     // proses simpan
-    public function createMenu(Request $request)
+    public function create(Request $request)
     {
         // set params
         $params =  $request->all();
         $parent =  intval($params['parent_id']);
         $params['menu_nomer'] = $this->getLastSortNumber($parent);
         // proses simpan
-        $menu =  Menu::create($params);
+        $menu =  $this->getModel()->create($params);
         if($menu){
             return $menu;
         }else{
@@ -253,43 +250,9 @@ class MenuRepositories
     // ambil nomor urut terakhir
     public function getLastSortNumber($parent = 0)
     {
-        $menu = Menu::where('parent_id' , $parent)->orderBy('menu_nomer', 'desc')->first();
+        $menu = $this->getModel()->where('parent_id' , $parent)->orderBy('menu_nomer', 'desc')->first();
         $number = (is_null($menu)) ? 0 : $menu->menu_nomer;
         return $number + 1;
     }
 
-    // proses update menu
-    public function updateMenu(Request $request, $menuId)
-    {
-        // get menu
-        $menu  = $this->getMenuById($menuId);
-        if($menu->update($request->all())){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    // hapus menu
-    public function deleteMenu($menuId)
-    {
-        $menu = $this->getMenuById($menuId);
-        if($menu->delete()){
-               return true;
-        }else{
-            return false;
-        }
-    }
-
-    // ambil data menu berdasarkan id
-    public static function getMenuById($id)
-    {
-        return Menu::find($id);
-    }
-
-    // ambil jumlah menu
-    public function getCountMenu()
-    {
-        return Menu::all()->count();
-    }
 }

@@ -121,7 +121,7 @@
                                         {!! Form::checkbox('crud_checkbox', 'create', false, ['class'=>'chk-col-teal', 'id' => 'create', 'v-model' => 'crudSelected']) !!}
                                         {!! Form::label('create','Create', ['class'=>'mr-10']) !!}
                                         {!! Form::checkbox('crud_checkbox', 'read', false, ['class'=>'chk-col-teal', 'id' => 'read', 'v-model' => 'crudSelected']) !!}
-                                        {!! Form::label('create','Read', ['class'=>'mr-10']) !!}
+                                        {!! Form::label('read','Read', ['class'=>'mr-10']) !!}
                                         {!! Form::checkbox('crud_checkbox', 'update', false, ['class'=>'chk-col-teal', 'id' => 'update', 'v-model' => 'crudSelected']) !!}
                                         {!! Form::label('update','Ureate', ['class'=>'mr-10']) !!}
                                         {!! Form::checkbox('crud_checkbox', 'delete', false, ['class'=>'chk-col-teal', 'id' => 'delete', 'v-model' => 'crudSelected']) !!}
@@ -223,7 +223,7 @@
                     return item.toLowerCase() + "-" + app.resource.toLowerCase();
                 },
                 crudDescription: function(item) {
-                    return "Memperbolehkan user untuk " + item.toUpperCase() + " a " + app.resource.substr(0,1).toUpperCase() + app.resource.substr(1);
+                    return "Memperbolehkan user untuk " + item.toUpperCase() + app.resource.substr(0,1).toUpperCase() + app.resource.substr(1);
                 }
             }
         });

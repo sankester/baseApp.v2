@@ -34,12 +34,12 @@
                     <div class="box-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="form-group row {{ $errors->has('site_name') ? ' has-error' : '' }} mb-0 pb-0">
+                                <div class="form-group row mb-0 pb-0">
                                     <div class="form-group col-md-6 mb-0 pb-0">
                                         <div class="row">
                                             {!! Form::label('portal_id','Nama Portal',['class' => 'col-md-3 control-label']) !!}
                                             <div class="col-sm-8">
-                                                {!! Form::select('portal_id', $listPortal, $defaultPortal, ['class' => 'form-control select2 select2-hidden-accessible', 'style' => 'width: 100%', "tabindex" => "-1" , "aria-hidden" => "true"] ); !!}
+                                                {!! Form::select('portal_id', $listPortal, $defaultPortal, ['class' => 'form-control search-form-control select2 select2-hidden-accessible', 'style' => 'width: 100%', "tabindex" => "-1" , "aria-hidden" => "true"] ); !!}
                                             </div>
                                         </div>
                                     </div>

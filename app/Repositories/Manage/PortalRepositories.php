@@ -9,71 +9,25 @@
 namespace App\Repositories\Manage;
 
 use App\Model\Manage\Portal;
+use App\Repositories\Base\BaseRepositories;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 
-/**
- * Class Portals
- * @package App\Repositories\BaseApp
- */
-class PortalRepositories
+
+class PortalRepositories extends BaseRepositories
 {
-    /**
-     * Mngambil data portal limit
-     * @param $limit
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public function getListPaginate($limit)
+
+    // set model
+    protected $model = 'Manage\\Portal';
+
+    // get list portal with role
+    public function getPortalWithRole()
     {
-        return Portal::paginate($limit);
+        return $this->getModel()->with('role')->get();
     }
 
-    /**
-     * Mengambil semua portal
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function getAll()
-    {
-        return Portal::all();
-    }
-
-    /**
-     * Mangambil jumlah portal
-     * @return int
-     */
-    public function getCountPortal()
-    {
-        return Portal::all()->count();
-    }
-
-    /**
-     * Mengambil data portal berdasarkan id
-     * @param $portalId
-     * @return mixed
-     */
-    public function getPortalById($portalId)
-    {
-        return Portal::findOrFail($portalId);
-    }
-
-    /**
-     * Mengambil data portal untuk select
-     * @return \Illuminate\Support\Collection
-     */
-    public function getAllSelect()
-    {
-        return Portal::pluck('portal_nm','id');
-    }
-
-
-    /**
-     * Proses menyimpan data portal ke database
-     * @param Request $request
-     * @return mixed
-     * @internal param $params
-     */
-    public function createPortal(Request $request)
+    // proses insert
+    public function create(Request $request)
     {
         // get params
         $params = $request->all();
@@ -83,8 +37,15 @@ class PortalRepositories
             // get image
             $image = $request->file('site_logo');
             // set image name
-            $imageName = time().$request->site_name. '-logo.' . $image->getClientOriginalExtension();
-            if($this->uploadImage($image, $imageName)){
+            $imageName = time().str_replace(' ','-',$request->site_name). '-logo.' . $image->getClientOriginalExtension();
+            // set config
+            $config = [
+                'name'      => $imageName,
+                'path'      => 'images/portal',
+                'thumbnail' => 'images/portal/thumbnail',
+                'resize'    => true
+            ];
+            if($this->uploadImage($image, $config)){
                 $params['site_logo'] = $imageName;
             }
             /** end upload logo */
@@ -95,8 +56,17 @@ class PortalRepositories
             // get image
             $image = $request->file('site_favicon');
             // set image name
-            $imageName = time().$request->site_name. '-favicon.' . $image->getClientOriginalExtension();
-            if($this->uploadImage($image, $imageName, 16, 16)){
+            $imageName = time().str_replace(' ','-',$request->site_name). '-favicon.' . $image->getClientOriginalExtension();
+            // set config
+            $config = [
+                'name'      => $imageName,
+                'path'      => 'images/portal',
+                'thumbnail' => 'images/portal/thumbnail',
+                'width'     => 16,
+                'height'     => 16,
+                'resize'    => true
+            ];
+            if($this->uploadImage($image,$config)){
                 $params['site_favicon'] = $imageName;
             }
             /** end upload favicon */
@@ -109,33 +79,25 @@ class PortalRepositories
             if($request->hasFile('site_logo')){
                 $imagePath = 'images/portal/';
                 $thumbnailPath = 'images/portal/thumbnail/';
-                $this->deleteImage($imagePath,   $params['site_logo'] );
-                $this->deleteImage($thumbnailPath,   $params['site_logo'] );
+                $this->deleteFile($imagePath,   $params['site_logo'] );
+                $this->deleteFile($thumbnailPath,   $params['site_logo'] );
             }
             // delete favicon
             if($request->hasFile('site_favicon')){
                 $imagePath = 'images/portal/';
                 $thumbnailPath = 'images/portal/thumbnail/';
-                $this->deleteImage($imagePath,   $params['site_favicon'] );
-                $this->deleteImage($thumbnailPath,   $params['site_favicon'] );
+                $this->deleteFile($imagePath,   $params['site_favicon'] );
+                $this->deleteFile($thumbnailPath,   $params['site_favicon'] );
             }
             // return
             return false;
         }
     }
 
-    /**
-     * Proses mengupdate data portal di database
-     * @param Request $request
-     * @param $portalId
-     * @return bool
-     * @internal param $params
-     * @internal param Portal $portal
-     * @internal param $id
-     */
-    public function updatePortal(Request $request, $portalId){
+    // proses update
+    public function update(Request $request, $portalId){
         // get portal
-        $portal = $this->getPortalById($portalId);
+        $portal = $this->getByID($portalId);
         // get params
         $params = $request->all();
         // cek logo
@@ -145,7 +107,14 @@ class PortalRepositories
             $image = $request->file('site_logo');
             // set image name
             $imageName = time().str_replace(' ','-',$request->site_name). '-logo.' . $image->getClientOriginalExtension();
-            if($this->uploadImage($image, $imageName)){
+            // set config
+            $config = [
+                'name'      => $imageName,
+                'path'      => 'images/portal',
+                'thumbnail' => 'images/portal/thumbnail',
+                'resize'    => true
+            ];
+            if($this->uploadImage($image, $config)){
                 $params['site_logo'] = $imageName;
                 $oldLogo = $portal->site_logo;
             }
@@ -158,7 +127,16 @@ class PortalRepositories
             $image = $request->file('site_favicon');
             // set image name
             $imageName = time().str_replace(' ','-',$request->site_name). '-favicon.' . $image->getClientOriginalExtension();
-            if($this->uploadImage($image, $imageName, 16, 16)){
+            // set config
+            $config = [
+                'name'      => $imageName,
+                'path'      => 'images/portal',
+                'thumbnail' => 'images/portal/thumbnail',
+                'width'     => 16,
+                'height'     => 16,
+                'resize'    => true
+            ];
+            if($this->uploadImage($image, $config)){
                 $params['site_favicon'] = $imageName;
                 $oldFavicon = $portal->site_favicon;
             }
@@ -169,15 +147,15 @@ class PortalRepositories
             if($request->hasFile('site_logo')){
                 $imagePath = 'images/portal/';
                 $thumbnailPath = 'images/portal/thumbnail/';
-                $this->deleteImage($imagePath, $oldLogo );
-                $this->deleteImage($thumbnailPath, $oldLogo );
+                $this->deleteFile($imagePath, $oldLogo );
+                $this->deleteFile($thumbnailPath, $oldLogo );
             }
             // delete favicon
             if($request->hasFile('site_favicon')){
                 $imagePath = 'images/portal/';
                 $thumbnailPath = 'images/portal/thumbnail/';
-                $this->deleteImage($imagePath, $oldFavicon );
-                $this->deleteImage($thumbnailPath, $oldFavicon );
+                $this->deleteFile($imagePath, $oldFavicon );
+                $this->deleteFile($thumbnailPath, $oldFavicon );
             }
             // return
             return true;
@@ -186,32 +164,26 @@ class PortalRepositories
             if($request->hasFile('site_logo')){
                 $imagePath = 'images/portal/';
                 $thumbnailPath = 'images/portal/thumbnail/';
-                $this->deleteImage($imagePath,   $params['site_logo'] );
-                $this->deleteImage($thumbnailPath,   $params['site_logo'] );
+                $this->deleteFile($imagePath,   $params['site_logo'] );
+                $this->deleteFile($thumbnailPath,   $params['site_logo'] );
             }
             // deletel favicon
             if($request->hasFile('site_favicon')){
                 $imagePath = 'images/portal/';
                 $thumbnailPath = 'images/portal/thumbnail/';
-                $this->deleteImage($imagePath,   $params['site_favicon'] );
-                $this->deleteImage($thumbnailPath,   $params['site_favicon'] );
+                $this->deleteFile($imagePath,   $params['site_favicon'] );
+                $this->deleteFile($thumbnailPath,   $params['site_favicon'] );
             }
             // default return
             return false;
         }
     }
 
-    /**
-     * Proses menghapus data portal dari database
-     * @param $portalId
-     * @return bool|null
-     * @internal param Portal $portal
-     * @internal param $id
-     */
-    public function deletePortal($portalId)
+    // proses delete
+    public function delete($portalId)
     {
         // get portal
-        $portal = $this->getPortalById($portalId);
+        $portal = $this->getByID($portalId);
         // run delete
         if($portal->delete()){
             // set path
@@ -219,13 +191,13 @@ class PortalRepositories
             $thumbnailPath = 'images/portal/thumbnail/';
             // delete logo
             if(! empty($portal->site_logo)){
-                $this->deleteImage($imagePath, $portal->site_logo );
-                $this->deleteImage($thumbnailPath, $portal->site_logo );
+                $this->deleteFile($imagePath, $portal->site_logo );
+                $this->deleteFile($thumbnailPath, $portal->site_logo );
             }
             // delete favicon
             if(! empty($portal->site_favicon)){
-                $this->deleteImage($imagePath, $portal->site_favicon );
-                $this->deleteImage($thumbnailPath, $portal->site_favicon );
+                $this->deleteFile($imagePath, $portal->site_favicon );
+                $this->deleteFile($thumbnailPath, $portal->site_favicon );
             }
             // return true
             return true;
@@ -234,43 +206,4 @@ class PortalRepositories
         return false;
     }
 
-    /**
-     * Hapus file image di local server
-     * @param $path
-     * @param $name
-     */
-    private function deleteImage($path , $name){
-        // delete thumbnail if exist
-        if (\File::exists($path . $name)) {
-            \File::delete($path . $name);
-        }
-    }
-
-    /**
-     * Upload image ke local server
-     * @param $image
-     * @param $imageName
-     * @param int $newWidth
-     * @param int $newHeight
-     * @return bool
-     */
-    private function uploadImage($image, $imageName, $newWidth =  100, $newHeight = 100)
-    {
-        $imagePath = 'images/portal/';
-        $thumbnailPath = 'images/portal/thumbnail/';
-        // resize image and save thumnail
-        $img = Image::make($image->getRealPath());
-        if ($img->resize($newWidth, $newHeight, function ($constraint) {
-            $constraint->aspectRatio();
-        })->save($thumbnailPath . $imageName)) {
-            // upload original image
-            if ($image->move($imagePath, $imageName)) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 }

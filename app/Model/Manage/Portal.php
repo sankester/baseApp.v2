@@ -14,7 +14,7 @@ class Portal extends Model
     protected $fillable = ['portal_nm','site_title', 'site_name','site_desc','site_favicon','site_logo','meta_keyword','meta_desc'];
 
     // set relation role
-    public function roles()
+    public function role()
     {
         return $this->hasMany('App\Model\Manage\Role');
     }

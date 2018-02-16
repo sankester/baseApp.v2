@@ -27,7 +27,7 @@
             </li>
             <li class="header "> Manajemen User</li>
             <li>
-                <a href="#">
+                <a href="{{ route('manage.user.index') }}">
                     <i class="mdi mdi-account mr-5"></i> <span>User</span>
                 </a>
             </li>

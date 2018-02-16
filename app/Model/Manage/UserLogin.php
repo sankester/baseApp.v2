@@ -37,8 +37,8 @@ class UserLogin extends Authenticatable
     }
 
     // set relation to role
-    public function roles()
+    public function role()
     {
-        return $this->belongsToMany('App\Model\Manage\Role', 'user_role');
+        return $this->belongsToMany('App\Model\Manage\Role', 'user_role', 'user_login_id', 'role_id')->withPivot('role_id','user_login_id');
     }
 }

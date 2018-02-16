@@ -38,14 +38,14 @@
                                     <div class="form-group col-md-4 ">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                {!! Form::text('permission_nm', isset($search['permission_nm']) ? $search['permission_nm'] : '', ['class' => 'form-control', 'placeholder' => 'nama permission'] ); !!}
+                                                {!! Form::text('permission_nm', isset($search['permission_nm']) ? $search['permission_nm'] : '', ['class' => 'form-control search-form-control', 'placeholder' => 'nama permission'] ); !!}
                                             </div>
                                        </div>
                                     </div>
                                     <div class="form-group col-md-4 ">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                {!! Form::select('portal_id', $listPortal, $search['portal_id'] , ['class' => 'form-control select2 select2-hidden-accessible', 'style' => 'width: 100%', "tabindex" => "-1" , "aria-hidden" => "true"] ); !!}
+                                                {!! Form::select('portal_id', $listPortal, $search['portal_id'] , ['class' => 'form-control search-form-control select2 select2-hidden-accessible', 'style' => 'width: 100%', "tabindex" => "-1" , "aria-hidden" => "true"] ); !!}
                                             </div>
                                         </div>
                                     </div>

@@ -38,7 +38,7 @@ class RoleController extends BaseAdminController
         //get and set data
         $listPortal = $portalRepositories->getAll();
         $default_portal = ($this->request->session()->exists('search_role')) ? $this->request->session()->get('search_role') : $listPortal->first()->id;
-        $listRoleByPortal = $this->repositories->getRoleByPortal($default_portal);
+        $listRoleByPortal = $this->repositories->getListPaginate(10, ['portal_id', $default_portal]);
         // assign
         $this->assign('listPortal' , $listPortal->pluck('portal_nm', 'id'));
         $this->assign('defaultPortal', $default_portal);
@@ -92,8 +92,8 @@ class RoleController extends BaseAdminController
     // proses simpan
     public function store(RoleRequest $request)
     {
-        // proses tambah portal ke database
-        if($this->repositories->createRole($request)){
+        // proses tambah role ke database
+        if($this->repositories->create($request)){
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah role.']);
         }else{
@@ -122,12 +122,6 @@ class RoleController extends BaseAdminController
         return response()->json(['message' => 'Gagal mengambil data menu', 'status' => 'failed']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
@@ -146,7 +140,7 @@ class RoleController extends BaseAdminController
         // set page title
         $this->page->setTitle('Edit Role');
         // get data
-        $role       = $this->repositories->getRoleById($roleId)->load('permission');
+        $role       = $this->repositories->getByID($roleId)->load('permission');
         $listPortal = $portalRepositories->getAll();
         $listMenu   = $menuRepositories->getMenuByPortal($listPortal->first()->id, 0,'');
         $listCollection = collect($listMenu)->pluck('menu_title','menu_url');
@@ -159,11 +153,11 @@ class RoleController extends BaseAdminController
         return $this->displayPage();
     }
 
-
+    // update role
     public function update(RoleRequest $request, $roleId)
     {
-        // proses tambah portal ke database
-        if($this->repositories->updateRole($request, $roleId)){
+        // proses tambah role ke database
+        if($this->repositories->update($request, $roleId)){
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil ubah role.']);
         }else{
@@ -179,8 +173,8 @@ class RoleController extends BaseAdminController
     {
         // cek apakah ajax request
         if ($request->ajax()){
-            // proses hapus portal dari database
-            if($this->repositories->deleteRole($roleId)){
+            // proses hapus role dari database
+            if($this->repositories->delete($roleId)){
                 // set response
                 return response(['message' => 'Berhasil menghapus role.', 'status' => 'success']);
             }

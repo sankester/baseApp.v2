@@ -1,6 +1,12 @@
 /*import base*/
 @import url(assets/vendor_components/bootstrap/dist/css/bootstrap.min.css);
 @import url(assets/vendor_components/bootstrap/dist/css/bootstrap-extend.css);
+/*load switch*/
+@import url(assets/vendor_components/bootstrap-switch/switch.css);
+/*load icheck*/
+@import url(assets/vendor_plugins/iCheck/all.css);
+/*load datepicker*/
+@import url(assets/vendor_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css);
 /*load select2*/
 @import url(assets/vendor_components/select2/dist/css/select2.min.css);
 /*load nestable*/

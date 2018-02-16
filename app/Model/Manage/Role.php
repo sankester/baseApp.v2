@@ -20,7 +20,7 @@ class Role extends Model
     }
 
     // set relation to user
-    public function users()
+    public function user()
     {
         return $this->belongsToMany('App\Model\Manage\UserLogin', 'user_role', 'role_id', 'user_login_id');
     }

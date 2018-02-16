@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Manage;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class UserRequest extends FormRequest
@@ -32,13 +33,13 @@ class UserRequest extends FormRequest
             case 'POST':
             {
                 $rules = [
-                    'name' =>  'required|min:3|max:100',
+                    'nama_lengkap' =>  'required|min:3|max:100',
                     'jabatan' =>  'required|min:3|max:100',
-                    'username' =>  'required|min:3|max:50|unique:users',
-                    'email' =>  'required|email|unique:users',
+                    'username' =>  'required|min:3|max:50|unique:user_login',
+                    'email' =>  'required|email|unique:user_login',
                     'password' =>  'required',
                     'password_confirm' => 'required|same:password',
-                    'images' => 'image|mimes:jpeg,png,jpg,gif,svg'
+                    'foto' => 'image|mimes:jpeg,png,jpg,gif,svg'
                 ];
                 break;
             }
@@ -46,28 +47,26 @@ class UserRequest extends FormRequest
             case 'PATCH':
             {
                 $rules = [
-                    'name' =>  'required|min:3|max:100',
+                    'nama_lengkap' =>  'required|min:3|max:100',
                     'jabatan' =>  'required|min:3|max:100',
                 ];
 
-                if ($this->hasFile('images')){
-                    $rules['images']  = 'image|mimes:jpeg,png,jpg,gif,svg';
+                if ($this->hasFile('foto')){
+                    $rules['foto']  = 'image|mimes:jpeg,png,jpg,gif,svg';
                 }
-
                 // cek apakah username sama dengan username yang di gunakan
-                if($this->input('username') == $this->user->username){
+                if($this->input('username') == $this->user()->username){
                     // ignore update
-                    $rules['username'] = 'required|min:3|max:50|unique:users,id,'.$this->user->id;
+                    $rules['username'] = 'required|min:3|max:50|unique:user_login,id,'.$this->user()->id;
                 }else{
                     // unique rule
-                    $rules['username'] = 'required|min:3|max:50|unique:users';
+                    $rules['username'] = 'required|min:3|max:50|unique:user_login,id,'.$this->route()->parameter('user');
                 }
                 // cek apakah password sama dengan passsword yang di gunakan
-                if($this->input('email') == $this->user->email){
-
-                    $rules['email'] = 'required|email|unique:users,email,'.$this->user->id;
+                if($this->input('email') == $this->user()->email){
+                    $rules['email'] = 'required|email|unique:user_login,id,'.$this->user()->id;
                 }else{
-                    $rules['email'] =  'required|email|unique:users';
+                    $rules['email'] =  'required|email|unique:user_login,id,'.$this->route()->parameter('user');
                 }
                 // cek apakah ada password yang di post
                 if(!empty($this->input('password'))){
@@ -77,6 +76,7 @@ class UserRequest extends FormRequest
             }
             default:break;
         }
+
         return $rules;
     }
 
@@ -98,8 +98,7 @@ class UserRequest extends FormRequest
     }
 
     public function response(array $errors){
-        // set notification error
-        flash($this->getErrorNotification())->error();
+
         if ($this->expectsJson()) {
             return new JsonResponse($errors, 422);
         }

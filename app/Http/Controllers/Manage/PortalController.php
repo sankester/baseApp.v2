@@ -76,7 +76,7 @@ class PortalController extends BaseAdminController
     public function store(PortalRequest $request)
     {
         // proses tambah portal ke database
-        if($this->repositories->createPortal($request)){
+        if($this->repositories->create($request)){
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
         }else{
             $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah portal.']);
@@ -100,7 +100,7 @@ class PortalController extends BaseAdminController
         //set page title
         $this->page->setTitle('Edit Portal');
         // assign data
-        $this->assign('portal', $this->repositories->getPortalById($portalId));
+        $this->assign('portal', $this->repositories->getByID($portalId));
         // display page
         return  $this->displayPage();
     }
@@ -115,7 +115,7 @@ class PortalController extends BaseAdminController
     public function update(PortalRequest $request, $portalId)
     {
         // proses update data portal di database
-        if($this->repositories->updatePortal($request, $portalId)){
+        if($this->repositories->update($request, $portalId)){
             // set notifikasi success
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
         }else{
@@ -139,7 +139,7 @@ class PortalController extends BaseAdminController
         // cek apakah ajax request
         if ($request->ajax()){
             // proses hapus portal dari database
-            if($this->repositories->deletePortal($portalId)){
+            if($this->repositories->delete($portalId)){
                 // set response
                 return response(['message' => 'Berhasil menghapus portal.', 'status' => 'success']);
             }

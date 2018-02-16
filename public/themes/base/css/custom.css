@@ -43,11 +43,12 @@
 .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
 .autocomplete-selected { background: #F0F0F0; }
 .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+
 .autocomplete-group { padding: 2px 5px; }
 .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
 
 /* wizard */
-#tambah-role > .content {
+#tambah-role > .content, #tambah-user > .content, #edit-user > .content {
     background-color: transparent;
 }
 
@@ -77,4 +78,46 @@
 .fx-element-overlay .fx-card-item .fx-overlay-1 .fx-info > li a:hover {
     background: #00c292;
     border-color: #00c292;
+}
+
+/*search field*/
+.search-form-control{
+    max-height: 30.88px;
+}
+
+.select2-container--default .select2-selection--single, .select2-selection .select2-selection--single {
+    max-height: 30.88px;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    padding-left: 0;
+    height: auto;
+    margin-top: -6px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 26px;
+    position: absolute;
+    top: -1px;
+    right: 1px;
+    width: 20px;
+}
+
+/*set valign search*/
+label.middle-label  {
+    font-weight: 500;
+    vertical-align: middle;
+    line-height: 30px;
+}
+
+/*green ribbon*/
+.ribbon-bookmark.bg-success:before {
+    border-color: #00c292;
+    border-right-color: transparent;
+}
+
+.ribbon-wrapper, .ribbon-wrapper-reverse, .ribbon-wrapper-bottom, .ribbon-wrapper-right-bottom {
+    position: relative;
+    background: #f7f7f7;
+    padding: 50px 15px 15px 15px;
 }

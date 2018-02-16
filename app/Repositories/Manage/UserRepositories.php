@@ -8,124 +8,177 @@
 
 namespace App\Repositories\Manage;
 
-use App\Libs\LogLib\LogRepository;
+use App\Model\Manage\UserData;
+use App\Repositories\Base\BaseRepositories;
 use Carbon\Carbon;
-use App\Model\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-/**
- * Class Users
- * @package App\Repositories\BaseApp
- */
-class UserRepositories
+class UserRepositories extends BaseRepositories
 {
-    /**
-     * Mengambil list user limit
-     * @param $limit
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public function getListPaginate($limit)
+    // set model
+    protected $model = 'Manage\\UserLogin';
+
+    // get jabatan exist
+    public function getJabatanExist()
     {
-        return User::paginate($limit);
+        return UserData::select('jabatan')->groupBy('jabatan')->get();
     }
 
-    /**
-     * Get Count User
-     * @return int
-     */
-    public function getCountUser()
+    // get list
+    public function getListPaginate($perPage = 10, ...$params)
     {
-       return User::all()->count();
+        return $this->getModel()->where('id','!=', $this->getAuth()->id)
+                ->where('status','like', $params[0])
+                ->whereHas('userData', function ($query) use ($params){
+                    $query->where('nama_lengkap','like' , $params[1]);
+                })
+                ->whereHas('role', function ($query) use ($params){
+                    $query->where('id','like' ,$params[2]);
+                })
+                ->with('userData','role')->paginate($perPage);
     }
 
-    /**
-     * Get COunt User by Portal
-     * @param $portal_id
-     * @return mixed
-     */
-    public function getCountUserByPortal($portal_id)
+    // get by id
+    public function getByID($id, $column = 'id')
     {
-        $countUser = DB::table('users')
-            ->join('roles', 'users.role_id', '=', 'roles.id')
-            ->join('portals', 'roles.portal_id', '=', 'portals.id')
-            ->where('portals.id', '=', $portal_id)
-            ->count();
-        return $countUser;
+       return $this->getModel()->with('userData','role')->findOrFail($id);
     }
 
-    /**
-     * Get Data UserLogin
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
-     */
-    public function getDataLogin()
+    // create
+    public function create(Request $request)
     {
-        return Auth::user();
-    }
-
-    /**
-     * Inser user baru
-     * @param $params
-     * @return $this|\Illuminate\Database\Eloquent\Model
-     */
-    public function createUser($params)
-    {
-
-        $params['password'] = Hash::make($params['password']);
-        $params['lock_st'] = 0;
-        $params['registerDate'] = Carbon::now();
-        LogRepository::addLog('insert', 'Tambah user dengan data',null, $params , ['password', 'password_confirm','images']);
-        return User::create($params);
-    }
-
-    /**
-     * Update user
-     * @param $params
-     * @param User $user
-     * @return bool
-     * @internal param $id
-     */
-    public function updateUser($params, User $user){
-        if (isset($params['password'])){
-            if(!empty( $params['password']) || !is_null($params['password'])){
-                $params['password'] = Hash::make($params['password']);
+        // set prameter login
+        $params  =  $request->only(['username','email']);
+        $params['password'] = Hash::make($request->password);
+        $params['status'] = 'aktif';
+        // create user login
+        $user = $this->getModel()->create($params);
+        if($user){
+            // set params data
+            $params     = $request->all();
+            $params['tanggal_lahir'] = Carbon::parse($request->tanggal_lahir);
+            // cek file
+            if($request->hasFile('foto')){
+                /** start upload image */
+                // get image
+                $image = $request->file('foto');
+                // set image name
+                $imageName = time() . '-'. $image->getClientOriginalName();
+                // set config
+                $config = [
+                    'name'      => $imageName,
+                    'path'      => 'images/avatar',
+                    'thumbnail' => 'images/avatar/thumbnail',
+                    'resize'    => true
+                ];
+                // Upload image
+                if($this->uploadImage($image, $config)){
+                    $params['foto'] = $imageName;
+                }
+                /** end upload image */
             }
-            if(is_null($params['password'])){
-                unset($params['password']);
-                unset($params['password_confirm']);
+            // create user data
+            $user->userData()->create($params);
+            // syncrone role
+            if($request->has('role_id')){
+                $user->role()->sync($request->role_id);
             }
-        }
-        LogRepository::addLog('update', 'Update user dengan data', $user ,$params, ['password', 'password_confirm','images'] );
-        return $user->update($params);
-    }
-
-    /**
-     * Update data user login
-     * @param $params
-     * @return mixed
-     */
-    public function updateUserLogin($params)
-    {
-        if(!is_null( $params['password'])){
-            $params['password'] = Hash::make($params['password']);
+            // return
+            return true;
         }else{
-            $params['password'] = Auth::user()->getAuthPassword();
+            return false;
         }
-        LogRepository::addLog('update', 'Update user dengan data', Auth::user(),$params );
-        return Auth::user()->update($params);
     }
 
-    /**
-     * Hapus user
-     * @param User $user
-     * @return bool|null
-     * @throws \Exception
-     * @internal param $id
-     */
-    public function deleteUser(User $user)
+    // update
+    public function update(Request $request , $userID)
     {
-        LogRepository::addLog('delete','Hapus user dengan nama role : '.$user->name);
-        return  $userDelete = $user->delete();
+        // set parameter login
+        $params  =  $request->only(['username','email','status']);
+        if(!is_null( $request->password)){
+            $params['password'] = Hash::make($request->password);
+        }else{
+            $params['password'] = $this->getAuth()->getAuthPassword();
+        }
+        // get user
+        $user = parent::getByID($userID);
+        // proses update
+        if($user->update($params)){
+            // set params data
+            $params     = $request->only(['nama_lengkap','tempat_lahir','tanggal_lahir','no_telp','jabatan','alamat']);
+            $params['tanggal_lahir'] = Carbon::parse($request->tanggal_lahir);
+            // cek file
+            if($request->hasFile('foto')){
+                /** start upload image */
+                // get image
+                $image = $request->file('foto');
+                // set image name
+                $imageName = time() . '-'. $image->getClientOriginalName();
+                // set config
+                $config = [
+                    'name'      => $imageName,
+                    'path'      => 'images/avatar',
+                    'thumbnail' => 'images/avatar/thumbnail',
+                    'resize'    => true
+                ];
+                // Upload image
+                if($this->uploadImage($image, $config)){
+                    $params['foto'] = $imageName;
+                    $oldFoto = $user->userData->foto;
+                }
+                /** end upload image */
+            }
+            if($user->userData()->update($params)){
+                // delete file foto
+                if(! empty($oldFoto)){
+                    $imagePath = 'images/avatar/';
+                    $thumbnailPath = 'images/avatar/thumbnail/';
+                    $this->deleteFile($imagePath, $oldFoto );
+                    $this->deleteFile($thumbnailPath, $oldFoto );
+                }
+            }else {
+                // delete file foto
+                if($request->hasFile('foto')){
+                    $imagePath = 'images/avatar/';
+                    $thumbnailPath = 'images/avatar/thumbnail/';
+                    $this->deleteFile($imagePath,  $params['foto'] );
+                    $this->deleteFile($thumbnailPath,  $params['foto'] );
+                }
+                // return status
+                return false;
+            }
+            // syncrone role
+            if($request->has('role_id')){
+                $user->role()->sync($request->role_id);
+            }
+            // return status
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    // proses delete
+    public function delete($userID)
+    {
+        // get portal
+        $user = parent::getByID($userID);
+        // run delete
+        if($user->delete()){
+            // set path
+            $imagePath = 'images/avatar/';
+            $thumbnailPath = 'images/avatar/thumbnail/';
+            // delete foto
+            if(! empty($user->foto)){
+                $this->deleteFile($imagePath, $user->foto );
+                $this->deleteFile($thumbnailPath, $user->foto );
+            }
+            // return true
+            return true;
+        }
+        // default return
+        return false;
     }
 }
