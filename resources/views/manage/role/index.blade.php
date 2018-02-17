@@ -82,6 +82,7 @@
                                     <p class="box-text text-left">{{ $role->role_desc }}</p>
                                     <div class="fx-overlay scrl-up">
                                         <ul class="fx-info">
+                                            <li><a class="btn default btn-outline image-popup-vertical-fit detail-role" href="#" data-url ="{{ route('manage.role.show',$role->id) }}" data-token="{{ csrf_token() }}"><i class="mdi mdi-eye"></i></a></li>
                                             <li><a class="btn default btn-outline image-popup-vertical-fit" href="{{ route('manage.role.edit', $role->id ) }}"><i class="mdi mdi-pencil"></i></a></li>
                                             <li><a class="btn default btn-outline delete-role" data-id="{{$role->id}}" href="#" data-url ="{{ route('manage.role.destroy',$role->id) }}" data-token="{{ csrf_token() }}"><i class="mdi mdi-delete"></i></a></li>
                                         </ul>
@@ -94,6 +95,9 @@
             </div>
         @endif
     </section>
+    {{--include modal--}}
+    @include('layouts.base.modal')
+    {{--end include modal--}}
 @endsection
 @section('custom-js')
     <script type="text/javascript">

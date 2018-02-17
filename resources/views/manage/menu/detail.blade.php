@@ -49,6 +49,9 @@
             @endif
         </div>
     </section>
+    {{--include modal--}}
+    @include('layouts.base.modal')
+    {{--end include modal--}}
 @endsection
 @section('custom-js')
     <script type="text/javascript">

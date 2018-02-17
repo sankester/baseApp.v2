@@ -127,7 +127,7 @@ class PermissionController extends BaseAdminController
                     // set params
                     $slug         = strtolower($x) . '-' . strtolower($request->resource);
                     $permission_nm = ucwords($x . " " . $request->resource);
-                    $description  = "Memperbolkehkan usern untuk " . strtoupper($x) . ' a ' . ucwords($request->resource);
+                    $description  = "Memperbolkehkan usern untuk " . strtoupper($x) . ' ' . ucwords($request->resource);
                     $params = [
                         'portal_id' => $request->portal_id,
                         'permission_nm' => $permission_nm,

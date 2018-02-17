@@ -184,12 +184,12 @@ class UserController extends BaseAdminController
             $foto = (empty($user->userData->foto)) ? asset("themes/base/images/card/img1.jpg") : asset("images/avatar/thumbnail/".$user->userData->foto);
             // set html view
             $title = 'Detail user '.$user->userData->nama_lengkap;
-            $stringHtml  = '<ul class="nav nav-pills margin-bottom margin-top-10">';
+            $stringHtml  = '<ul class="nav nav-tabs customtab" role="tablist">';
             $stringHtml .= '<li class="nav-item"><a href="#navpills-1" class="nav-link active" data-toggle="tab" aria-expanded="false">User Data</a></li>';
             $stringHtml .= '<li class="nav-item"><a href="#navpills-2" class="nav-link" data-toggle="tab" aria-expanded="false">User Login</a></li>';
             $stringHtml .= '<li class="nav-item"><a href="#navpills-3" class="nav-link" data-toggle="tab" aria-expanded="true">Role</a></li>';
             $stringHtml .= '</ul>';
-            $stringHtml .= '<div class="tab-content">';
+            $stringHtml .= '<div class="tab-content mt-10">';
             $stringHtml .= '<div id="navpills-1" class="tab-pane active pl-20" aria-expanded="false"><div class="row" ><div class="col-md-9">';
             $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Nama</label><div class="col-sm-9">';
             $stringHtml .= ': <label class="control-label">'.$user->userData->nama_lengkap.'</label></div></div>';

@@ -66,4 +66,41 @@ $(document).ready(function () {
                 }
             });
     });
+    $('.detail-menu').on('click', function () {
+        var data_url = $(this).attr('data-url');
+        var data_token = $(this).attr('data-token');
+        $.ajax({
+            url: data_url,
+            type: 'POST',
+            data: {_method: 'GET', _token: data_token},
+            success: function (response) {
+                if(response.status == 'success'){
+                    $('#myModal').on('show.bs.modal', function (event) {
+                        var button = $(event.relatedTarget) // Button that triggered the modal
+                        // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                        // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                        var modal = $(this)
+                        modal.find('.modal-title').text(response.data.title);
+                        modal.find('.modal-body ').html(response.data.html);
+                    })
+                    $('#myModal').modal('show');
+                }else{
+                    swal({
+                        title: response.status,
+                        text: response.message,
+                        confirmButtonColor: "#EF5350",
+                        type: "error"
+                    });
+                }
+            },
+            error:function(data){
+                swal({
+                    title: "Gagal !",
+                    text: "Kesalahan pada server, mohon hubungi admin.",
+                    confirmButtonColor: "#1e88e5 ",
+                    type: "info"
+                });
+            }
+        });
+    });
 });

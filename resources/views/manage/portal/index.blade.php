@@ -44,6 +44,7 @@
                                 <p class="box-text text-left">{{ $portal->site_desc }}</p>
                                 <div class="fx-overlay scrl-up">
                                     <ul class="fx-info">
+                                        <li><a class="btn default btn-outline image-popup-vertical-fit detail-portal" href="#" data-url ="{{ route('manage.portal.show',$portal->id) }}" data-token="{{ csrf_token() }}"><i class="mdi mdi-eye"></i></a></li>
                                         <li><a class="btn default btn-outline image-popup-vertical-fit" href="{{ route('manage.portal.edit', $portal->id ) }}"><i class="mdi mdi-pencil"></i></a></li>
                                         <li><a class="btn default btn-outline delete-portal" data-id="{{$portal->id}}" href="#" data-url ="{{ route('manage.portal.destroy',$portal->id) }}" data-token="{{ csrf_token() }}"><i class="mdi mdi-delete"></i></a></li>
                                     </ul>
@@ -56,4 +57,7 @@
             </div>
         @endif
     </section>
+    {{--include modal--}}
+    @include('layouts.base.modal')
+    {{--end include modal--}}
 @endsection

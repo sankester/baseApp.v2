@@ -95,6 +95,7 @@ class MenuRepositories extends BaseRepositories
                 $viewHtml  .= '<div class="media-body">';
                 $viewHtml  .= '<p><a class="hover-primary" href="#"><strong>'.$menu->menu_title.'</strong></a>';
                 $viewHtml  .= '<time class="float-right">';
+                $viewHtml  .= '<a href="#" class="btn btn-success btn-sm detail-menu  mr-5" data-url="'.route('manage.menu.detail',$menu->id).'" data-token="'.csrf_token().'"><i class="mdi mdi-eye"></i></a>';
                 $viewHtml  .= '<a href="'.route('manage.menu.edit',[$portalId ,$menu->id]).'" class="btn btn-info btn-sm mr-5"><i class="mdi mdi-pencil"></i></a>';
                 $viewHtml  .= '<a href="#" class="btn btn-danger btn-sm delete-menu" delete-id="'.$menu->id.'" delete-url="'. route('manage.menu.destroy', $menu->id ).'" delete-token="'.csrf_token().'"><i class="mdi mdi-delete"></i></a>';
                 $viewHtml  .= '</time>';

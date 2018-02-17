@@ -17,9 +17,6 @@ class PortalController extends BaseAdminController
 
     /**
      * PortalController constructor.
-     * @param PortalRepositories $repositories
-     * @param Request $request
-     * @internal param Portals $portals
      */
     public function __construct(PortalRepositories $repositories,Request $request)
     {
@@ -31,8 +28,6 @@ class PortalController extends BaseAdminController
     }
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -70,8 +65,6 @@ class PortalController extends BaseAdminController
 
     /**
      * Proses tambah portal ke database
-     * @param PortalRequest $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function store(PortalRequest $request)
     {
@@ -88,8 +81,6 @@ class PortalController extends BaseAdminController
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function edit($portalId)
     {
@@ -105,12 +96,59 @@ class PortalController extends BaseAdminController
         return  $this->displayPage();
     }
 
+    // detail portal
+    public function show(Request $request, $portalID)
+    {
+        // cek apakah ajax request
+        if ($request->ajax()) {
+            // get data
+            $portal = $this->repositories->getByID($portalID);
+            if(! $portal){
+                // default response
+                return response(['message' => 'Gagal mengambil data user', 'status' => 'failed']);
+            }
+            // set html view
+            $title = 'Detail menu '.$portal->portal_nm;
+            $stringHtml  = '<ul class="nav nav-tabs customtab" role="tablist">';
+            $stringHtml .= '<li class="nav-item"><a href="#navpills-1" class="nav-link active" data-toggle="tab" aria-expanded="false">Data Portal</a></li>';
+            $stringHtml .= '<li class="nav-item"><a href="#navpills-2" class="nav-link" data-toggle="tab" aria-expanded="false">Role</a></li>';
+            $stringHtml .= '</ul>';
+            $stringHtml .= '<div class="tab-content mt-10">';
+            $stringHtml .= '<div id="navpills-1" class="tab-pane active pl-20" aria-expanded="false"><div class="row" ><div class="col-md-9">';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Nama</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$portal->portal_nm.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Title</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$portal->site_title.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Deskripsi</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$portal->site_desc.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Jumlah Menu</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$portal->menu->count().'</label></div></div>';
+            $stringHtml .= '</div></div></div>';
+            $stringHtml .= '<div id="navpills-2" class="tab-pane pl-20" aria-expanded="true"><div class="row">';
+            $stringHtml .= '<div class="box"><div class="box-body"><div class="row">';
+            foreach ($portal->role as $role) {
+                $stringHtml .= '<div class="col-md-4"><div class="media align-items-center">';
+                $stringHtml .= '<span class="fa fa-users lead text-info"></span>';
+                $stringHtml .= '<div class="media-body"><p><strong>'.$role->role_nm.'</strong></p>';
+                $stringHtml .= '<p>'.$role->role_desc.'</p></div></div></div>';
+            }
+            $stringHtml .= '</div></div></div>';
+            $stringHtml .= '</div></div>';
+            // set output
+            $outputUser = [
+                'title' => $title,
+                'html'  => $stringHtml
+            ];
+            // set response
+            return response(['data' => $outputUser, 'status' => 'success']);
+        }
+        // default response
+        return response(['message' => 'Gagal mengambil data user', 'status' => 'failed']);
+
+    }
 
     /**
      * Proses ubah data portal di database
-     * @param PortalRequest $request
-     * @param $portalId
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function update(PortalRequest $request, $portalId)
     {
@@ -128,11 +166,6 @@ class PortalController extends BaseAdminController
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param $portalId
-     * @param PortalRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \App\Model\portal $portal
      */
     public function destroy($portalId, PortalRequest $request)
     {

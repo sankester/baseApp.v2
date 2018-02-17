@@ -122,12 +122,55 @@ class RoleController extends BaseAdminController
         return response()->json(['message' => 'Gagal mengambil data menu', 'status' => 'failed']);
     }
 
-    public function show($id)
+    public function show(Request $request, $roleID)
     {
-        //
+        // cek apakah ajax request
+        if ($request->ajax()){
+            // get data
+            $role       = $this->repositories->getByID($roleID)->load('permission');
+            // cek data param
+            if(! $role){
+                // default response
+                return response(['message' => 'Gagal mengambil data role', 'status' => 'failed']);
+            }
+            // set html
+            $title = 'Detail role '.$role->role_nm;
+            $stringHtml  = '<ul class="nav nav-tabs customtab" role="tablist">';
+            $stringHtml .= '<li class="nav-item"><a href="#navpills-1" class="nav-link active" data-toggle="tab" aria-expanded="false">Role Data</a></li>';
+            $stringHtml .= '<li class="nav-item"><a href="#navpills-2" class="nav-link" data-toggle="tab" aria-expanded="false">Permission</a></li>';
+            $stringHtml .= '</ul>';
+            $stringHtml .= '<div class="tab-content mt-10">';
+            $stringHtml .= '<div id="navpills-1" class="tab-pane active pl-20" aria-expanded="false"><div class="row" ><div class="col-md-9">';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Nama</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$role->role_nm.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Deskripsi</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$role->role_desc.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Default Page</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$role->default_page.'</label></div></div>';
+            $stringHtml .= '</div></div></div>';
+            $stringHtml .= '<div id="navpills-2" class="tab-pane pl-20" aria-expanded="true"><div class="row">';
+            $stringHtml .= '<div class="box"><div class="box-body"><div class="row">';
+            foreach ($role->permission as $permission) {
+                $stringHtml .= '<div class="col-md-4"><div class="media align-items-center">';
+                $stringHtml .= '<span class="fa fa-key lead text-info"></span>';
+                $stringHtml .= '<div class="media-body"><p><strong>'.$permission->permission_nm.'</strong></p>';
+                $stringHtml .= '<p>'.$permission->permission_desc.'</p></div></div></div>';
+            }
+            $stringHtml .= '</div></div></div>';
+            $stringHtml .= '</div></div>';
+            // set output
+            $outputUser = [
+                'title' => $title,
+                'html'  => $stringHtml
+            ];
+            // response
+            return response()->json(['data' => $outputUser , 'status' => 'success']);
+        }
+        // default response
+        return response()->json(['message' => 'Gagal mengambil data role', 'status' => 'failed']);
     }
 
-
+    // show edit form
     public function edit(PortalRepositories $portalRepositories, MenuRepositories $menuRepositories, $roleId)
     {
         // set page template

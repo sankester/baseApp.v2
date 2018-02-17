@@ -115,6 +115,64 @@ class MenuController extends BaseAdminController
         return $this->displayPage();
     }
 
+    // get detail menu
+    public function detail(Request $request,$menuID)
+    {
+        // cek apakah ajax request
+        if ($request->ajax()){
+            // get data
+            $menu       = $this->repositories->getByID($menuID)->load('permission');
+            // cek data param
+            if(! $menu){
+                // default response
+                return response(['message' => 'Gagal mengambil data menu', 'status' => 'failed']);
+            }
+            // set html
+            $title = 'Detail menu '.$menu->menu_title;
+            $stringHtml  = '<ul class="nav nav-tabs customtab" role="tablist">';
+            $stringHtml .= '<li class="nav-item"><a href="#navpills-1" class="nav-link active" data-toggle="tab" aria-expanded="false">Role Data</a></li>';
+            $stringHtml .= '<li class="nav-item"><a href="#navpills-2" class="nav-link" data-toggle="tab" aria-expanded="false">Permission</a></li>';
+            $stringHtml .= '</ul>';
+            $stringHtml .= '<div class="tab-content mt-10">';
+            $stringHtml .= '<div id="navpills-1" class="tab-pane active pl-20" aria-expanded="false"><div class="row" ><div class="col-md-9">';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Nama</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$menu->menu_title.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Deskripsi</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$menu->menu_desc.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">URL</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$menu->menu_url.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Aktif</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.(($menu->active_st == 'yes') ? 'Iya': 'Tidak').'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Tampilkan</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.(($menu->display_st == 'yes') ? 'Iya': 'Tidak').'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Status</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$menu->menu_st.'</label></div></div>';
+            $stringHtml .= '<div class="form-group row"><label class="col-md-3 control-label">Target</label><div class="col-sm-9">';
+            $stringHtml .= ': <label class="control-label">'.$menu->menu_target.'</label></div></div>';
+            $stringHtml .= '</div></div></div>';
+            $stringHtml .= '<div id="navpills-2" class="tab-pane pl-20" aria-expanded="true"><div class="row">';
+            $stringHtml .= '<div class="box"><div class="box-body"><div class="row">';
+            foreach ($menu->permission as $permission) {
+                $stringHtml .= '<div class="col-md-4"><div class="media align-items-center">';
+                $stringHtml .= '<span class="fa fa-key lead text-info"></span>';
+                $stringHtml .= '<div class="media-body"><p><strong>'.$permission->permission_nm.'</strong></p>';
+                $stringHtml .= '<p>'.$permission->permission_desc.'</p></div></div></div>';
+            }
+            $stringHtml .= '</div></div></div>';
+            $stringHtml .= '</div></div>';
+            // set output
+            $outputUser = [
+                'title' => $title,
+                'html'  => $stringHtml
+            ];
+            // response
+            return response()->json(['data' => $outputUser , 'status' => 'success']);
+        }
+        // default response
+        return response()->json(['message' => 'Gagal mengambil data menu', 'status' => 'failed']);
+    }
+
+    // atur urutan menu
     public function sortable(Request $request)
     {
         // cek apakah ajax request
