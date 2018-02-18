@@ -66,14 +66,21 @@ class MenuController extends BaseAdminController
         // load js
         $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
         $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
+        $this->loadJs('themes/general/jQuery-Autocomplete-master/dist/jquery.autocomplete.min.js');
         // set page title
         $this->page->setTitle('Tambah Menu');
         // get data
         $portal = $portalRepositories->getByID($portalId);
         $parentMenu  = $this->repositories->getMenuSelectByPortal($portalId, 0, '');
+        $listGroup = $this->repositories->getGroupAvailable($portalId)->toArray();
+        $groupOutput  = '';
+        foreach ($listGroup as $group) {
+            $groupOutput .= '"'.$group['menu_group'].'",';
+        }
         // assign data
         $this->assign('portal' , $portal);
         $this->assign('parentMenu' , $parentMenu);
+        $this->assign('groupOutput', rtrim($groupOutput,','));
         // load view
         return $this->displayPage();
     }
@@ -194,16 +201,23 @@ class MenuController extends BaseAdminController
         // load js
         $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
         $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
+        $this->loadJs('themes/general/jQuery-Autocomplete-master/dist/jquery.autocomplete.min.js');
         // set page title
         $this->page->setTitle('Edit Menu');
         // get data
         $portal = $portalRepositories->getByID($portalId);
         $menu   = $this->repositories->getByID($menuId);
         $parentMenu  = $this->repositories->getMenuSelectByPortal($portalId, 0, '');
+        $listGroup = $this->repositories->getGroupAvailable($portalId)->toArray();
+        $groupOutput  = '';
+        foreach ($listGroup as $group) {
+            $groupOutput .= '"'.$group['menu_group'].'",';
+        }
         // assign data
         $this->assign('portal' , $portal);
         $this->assign('menu', $menu);
         $this->assign('parentMenu' , $parentMenu);
+        $this->assign('groupOutput', rtrim($groupOutput,','));
         // load view
         return $this->displayPage();
     }

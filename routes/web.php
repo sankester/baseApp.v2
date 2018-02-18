@@ -20,6 +20,9 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::prefix('base')->group(function () {
+    // set forbidden access
+    Route::get('forbidden/page/{code}/{nav_id?}','Manage\ForbiddenAccess@page')->name('base.forbidden');
+    // home
     Route::get('manage/home', 'Manage\HomeController@index')->name('base.manage.home');
     // portal
     Route::resource('manage/portal', 'Manage\PortalController', ['as' => 'manage']);

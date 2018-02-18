@@ -25,6 +25,21 @@
             @endif
         </div>
     </div>
+    <div id="menu-group">
+        @if($menu->parent_id == '0' || empty($menu->parent_id))
+        <div class="form-group row {{ $errors->has('menu_group') ? ' has-error' : '' }}" >
+            {!! Form::label('menu_group','Group',['class' => 'col-sm-3 control-label']) !!}
+            <div class="col-sm-9">
+                {!! Form::text('menu_group',null,['class' => 'form-control ' , 'required' =>'true']) !!}
+                @if ($errors->has('menu_group'))
+                    <span class="help-block">
+                    <strong>{{ $errors->first('menu_group') }}</strong>
+                </span>
+                @endif
+            </div>
+        </div>
+        @endif
+    </div>
     <div class="form-group row {{ $errors->has('menu_desc') ? ' has-error' : '' }}">
         {!! Form::label('menu_desc','Deskripsi menu',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
@@ -193,5 +208,32 @@
             });
 
         });
+
+        // init auto complite
+        var availableGroup = [
+            {!! $groupOutput !!}
+        ];
+        $( "#menu_group" ).autocomplete({
+            lookup : availableGroup
+        });
+
+        $("#parent_id").change(function () {
+            // get value
+            var parent_id  = $(this).val();
+            if(parent_id == '0'){
+                var menu_group_html = '<div class="form-group row ">' +
+                    '<label for="menu_group" class="col-sm-3 control-label">Group</label>' +
+                    '<div class="col-sm-9">' +
+                    '<input class="form-control " required="true" name="menu_group" type="text" id="menu_group">' +
+                    '</div></div>';
+                $('#menu-group').append(menu_group_html);
+                $("#menu_group" ).autocomplete({
+                    lookup : availableGroup
+                });
+            }else{
+                $('#menu-group').html('');
+            }
+        });
+
     </script>
 @stop

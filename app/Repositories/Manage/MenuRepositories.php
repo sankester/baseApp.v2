@@ -11,6 +11,7 @@ namespace App\Repositories\Manage;
 use App\Model\Manage\Menu;
 use App\Model\Manage\Portal;
 use App\Repositories\Base\BaseRepositories;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,6 +23,24 @@ class MenuRepositories extends BaseRepositories
 {
     // set model
     protected $model = 'Manage\\Menu';
+
+    // active status menu
+    private $isActive = false;
+
+    // permission role
+    private $permissionRole ;
+
+    // is active
+    public function isActive()
+    {
+        return $this->isActive;
+    }
+
+    // set is active
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+    }
 
     // ambil data menu berdasarkan portal format object
     public function getDataMenuByPortal($portalID, $parentID, $returnMenu = [], $indent = '')
@@ -171,52 +190,84 @@ class MenuRepositories extends BaseRepositories
     }
 
     // generate menu
-    public function generateMenu($portalId, $nav_active)
+    public function generateMenu($activeID)
     {
         $html = "";
-        //get nav by parent
-        $navs = Auth::user()->role->menu()->where('parent_id', 0)->where('display_st', '1')->orderBy('nav_no', 'asc')->get();
-        if (!empty($navs)) {
-            foreach ($navs as $key => $nav) {
-                if($nav->pivot->c == 0 and $nav->pivot->r == 0 and $nav->pivot->u == 0 and $nav->pivot->d == 0 ){
-                   continue;
-                }else{
-                    $selected = ($nav->id == $nav_active) ? "class='active'" : "";
-                    $url = ($nav->nav_st == 'internal') ? url($nav->nav_url) : $nav->nav_url;
-                    $target = ($nav->nav_st != 'internal') ? '_blank' : '_self';
-                    $icon = (str_contains($nav->nav_icon, 'fa-')) ? 'fa ' . $nav->nav_icon : $nav->nav_icon;
-                    $html .= '<li ' . $selected . '>';
-                    $html .= '<a href="' . $url . '" target="' . $target . '"><i class="' . $icon . '"></i><span>' . $nav->nav_title . '</span></a>';
-                    $str_child_html = $this->getChildNav($nav->id);
-                    $html .= !empty($str_child_html) ? $str_child_html : '';
-                    $html .= "</li>";
+        // get role from session
+        $role = session()->get('role_active')->load('permission');
+        // get permission
+        foreach ($role->permission as $permission){
+            $this->permissionRole[] = $permission->id;
+        }
+        // get list menu by role
+        $listMenu = $role->portal->menu()->where('display_st','yes')->where('parent_id', 0)->orderBy('menu_nomer')->with('permission')->get();
+        if($listMenu->isNotEmpty()){
+            // set default menu group
+            $menuGroup = '';
+            foreach ($listMenu as $menu) {
+                // continue is not access
+                if($this->cekFullAccessMenu($menu->permission) == false){
+                    continue;
                 }
+                if(!empty($menu->menu_group) && $menu->menu_group != $menuGroup){
+                    $html .= ' <li class="header ">'.$menu->menu_group.'</li>';
+                    $menuGroup = $menu->menu_group;
+                }
+                // if access
+                $selected = ($menu->id == $activeID) ? "class='active'" : "";
+                $url = ($menu->menu_st == 'internal') ? url($menu->menu_url) : $menu->menu_url;
+                $target = ($menu->menu_target == 'blank') ? '_blank' : '_self';
+                $icon = (!empty($menu->menu_icon)) ? strpos('-', $menu->menu_icon).' '. $menu->menu_icon : '';
+                $expanded = '';
+                // get child
+                $str_child_html = $this->getChildMenu($menu->id, $activeID);
+                if(!empty($str_child_html)){
+                    $selected = 'class="treeview"';
+                    $expanded = '<span class="pull-right-container"><i class="fa fa-angle-right pull-right"></i></span>';
+                }
+                if($this->isActive()){
+                    $selected = 'class="treeview active menu-open "';
+                    $expanded = '<span class="pull-right-container"><i class="fa fa-angle-right pull-right"></i></span>';
+                    $this->setIsActive(false);
+                }
+                // set menu
+                $html .= '<li ' . $selected . '>';
+                $html .= '<a href="' . $url . '" target="' . $target . '"><i class="' . $icon . ' mr-5"></i><span>' . $menu->menu_title . '</span>'.$expanded.'</a>';
+                $html .= $str_child_html;
+                $html .= '</li>';
             }
+
         }
         return $html;
     }
 
     // generate child menu
-    private function getChildMenu($nav_id)
+    private function getChildMenu($menuID, $activeID)
     {
-        $navs = Menu::where('parent_id', $nav_id)->orderBy('nav_no', 'asc')->get();
+        $listMenu = $this->getModel()->where('parent_id', $menuID)->orderBy('menu_nomer', 'asc')->with('permission')->get();
         $html = '';
-        if ($navs->count() > 0) {
-            $html .= '<ul>';
-            foreach ($navs as $key => $nav) {
-                $html .= "<li>";
-                $url = ($nav->nav_st == 'internal') ? url($nav->nav_url) : $nav->nav_url;
-                $target = ($nav->nav_st != 'internal') ? '_blank' : '_self';
-                $icon = (str_contains($nav->nav_icon, 'fa-')) ? 'fa ' . $nav->nav_icon : $nav->nav_icon;
-                $html .= '<a href="' . $url . '" target="' . $target . '"><i class="' . $icon . '"></i><span>' . $nav->nav_title . '</span></a>';
-                $childs = Menu::where('parent_id', $nav->id)->orderBy('nav_no', 'asc')->get();
+        if ($listMenu->isNotEmpty()) {
+            $html .= '<ul class="treeview-menu">';
+            foreach ($listMenu as $key => $menu) {
+                if($menu->id == $activeID){
+                    $selected = "class='active'";
+                    $this->setIsActive(true);
+                }else{
+                    $selected = '';
+                }
+                $html .= '<li '.$selected.'>';
+                $url = ($menu->menu_st == 'internal') ? url($menu->menu_url) : $menu->menu_url;
+                $target = ($menu->menu_target == 'blank') ? '_blank' : '_self';
+                $html .= '<a href="' . $url . '" target="' . $target . '"><span>' . $menu->menu_title . '</span></a>';
+                $childs = $this->getModel()->where('parent_id', $menu->id)->orderBy('menu_nomer', 'asc')->get();
                 if (!empty($childs)) {
-                    $html .= $this->getChildMenu($nav->id);
+                    $html .= $this->getChildMenu($menu->id, $activeID);
                 }
                 $html .= "</li>";
             }
             $html .= '</ul>';
         }
+
         return $html;
     }
 
@@ -232,6 +283,38 @@ class MenuRepositories extends BaseRepositories
         return $listParent;
     }
 
+    // static get menu by url
+    public static function getMenuByUrl($url)
+    {
+        $menu = Menu::where('menu_url', '=', $url)->first();
+        return $menu;
+    }
+
+    public static function getMenuByID($menuID)
+    {
+        return Menu::findOrFail($menuID);
+    }
+    // update
+    public function update(Request $request, $id)
+    {
+        $params =  $request->all();
+        if(! $request->has('menu_group')){
+            if(intval($request->parent_id) != 0){
+                $params['menu_group']  = $this->getByID($request->parent_id)->menu_group;
+            }else{
+                $params['menu_group'] = '';
+            }
+        }
+        // update
+        $menu =  $this->getByID($id)->update($params);
+        // cek update
+        if($menu){
+            return $menu;
+        }else{
+            return false;
+        }
+    }
+
     // proses simpan
     public function create(Request $request)
     {
@@ -239,6 +322,15 @@ class MenuRepositories extends BaseRepositories
         $params =  $request->all();
         $parent =  intval($params['parent_id']);
         $params['menu_nomer'] = $this->getLastSortNumber($parent);
+        if(! $request->has('menu_group')){
+            if(intval($request->parent_id) != 0){
+                $params['menu_group']  = $this->getByID($request->parent_id)->menu_group;
+            }else{
+                $params['menu_group'] = '';
+            }
+        }else{
+            $params['menu_group'] = '';
+        }
         // proses simpan
         $menu =  $this->getModel()->create($params);
         if($menu){
@@ -256,4 +348,21 @@ class MenuRepositories extends BaseRepositories
         return $number + 1;
     }
 
+    // get group availible
+    public function getGroupAvailable($portalID)
+    {
+        return $this->getModel()->select('menu_group')->where('portal_id', $portalID)->where('parent_id', 0)->groupBy('menu_group')->get();
+    }
+
+    // cek full access menu
+    private function cekFullAccessMenu($listPermission){
+        // cek permission
+        foreach ($listPermission as $menuPermission) {
+            if(! in_array($menuPermission->id, $this->permissionRole)){
+                return false;
+            }
+        }
+        // default retunr
+        return true;
+    }
 }

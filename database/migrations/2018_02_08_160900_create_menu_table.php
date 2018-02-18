@@ -20,6 +20,7 @@ class CreateMenuTable extends Migration
             $table->string('menu_title');
             $table->string('menu_desc');
             $table->string('menu_url');
+            $table->string('menu_group')->nullable();
             $table->integer('menu_nomer');
             $table->enum('active_st',['yes','no']);
             $table->enum('display_st',['yes','no']);

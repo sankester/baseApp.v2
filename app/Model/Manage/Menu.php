@@ -16,7 +16,7 @@ class Menu extends Model
     // set fillable column
     protected $fillable = [
         'portal_id','parent_id',
-        'menu_title','menu_desc',
+        'menu_title','menu_group','menu_desc',
         'menu_url', 'menu_nomer',
         'active_st', 'display_st',
         'menu_st', 'menu_icon',

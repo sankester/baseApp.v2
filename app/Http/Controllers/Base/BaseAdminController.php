@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Base;
 use App\Http\Controllers\Controller;
 use App\Libs\PageLib\PageTrait;
 //use App\Repositories\BaseApp\NavRepositories;
+use App\Repositories\Manage\MenuRepositories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,23 +17,6 @@ use Illuminate\Support\Facades\Auth;
 class BaseAdminController extends Controller
 {
     use PageTrait;
-
-    /**
-     * @var array
-     */
-    protected $role = array();
-    /**
-     * @var
-     */
-    protected $portal_id;
-    /**
-     * @var
-     */
-    protected $nav_id;
-    /**
-     * @var Request
-     */
-    protected $request;
 
     /**
      * BaseAdminController constructor.
@@ -46,7 +30,7 @@ class BaseAdminController extends Controller
         $this->setDefaultCss();
         $this->setDefaultJs();
         $this->load_theme('base');
-//        $this->display_current_page();
+        $this->display_current_page();
     }
 
     /**
@@ -79,36 +63,29 @@ class BaseAdminController extends Controller
         $this->loadJs($Js);
     }
 
-    /**
-     * Manampilakna data page
-     */
-//    protected function display_current_page(){
-//        $currentUrl =  $this->request->segment(1). '/'.$this->request->segment(2);
-//        $nav = NavRepositories::getNavByUrl($currentUrl);
-//        if($nav){
-//            $this->page->setTitle($nav->portal->site_title);
-//        }
-//        isset($nav->portal_id) ?  $this->portal_id = $nav->portal_id: $this->portal_id ;
-//        isset($nav->portal_id) ?  $this->nav_id = $nav->id : $this->nav_id  ;
-//        $this->assign('nav_id', $this->nav_id);
-//    }
+    // menampilkan data halaman sekarang
+    protected function display_current_page(){
+        $currentUrl =  $this->request->segment(1). '/'.$this->request->segment(2). '/'.$this->request->segment(3);
+        $menu = MenuRepositories::getMenuByUrl($currentUrl);
+        if($menu){
+            $this->page->setDefaultTitle($menu->portal->site_title);
+        }
+
+        isset($menu->portal_id) ?  $this->menuActive = $menu->id : $this->menuActive  ;
+        $this->assign('activeMenu', $this->menuActive);
+    }
 
 
-    /**
-     * Cek autorisasi
-     * @param $rule
-     * @return array
-     */
-//    protected function setRule($rule)
-//    {
-//        // cek result
-//        if($this->validatePage($this->nav_id) == true) :
-//            $roles = $this->getRoleAccess($this->nav_id);
-//            return $this->validateAccess($rule, $roles,'base/forbidden/page/');
-//        else :
-//            // cek request
-//            return $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, halaman yang anda request tidak tersedia.','404');
-//        endif;
-//    }
+    // set permission
+    protected function setPermission($permission)
+    {
+        // cek result
+        if($this->validatePage($this->menuActive) == true) :
+            return $this->validateAccess($permission,'base/forbidden/page/');
+        else :
+            // cek request
+            return $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, halaman yang anda request tidak tersedia.','404');
+        endif;
+    }
 
 }
