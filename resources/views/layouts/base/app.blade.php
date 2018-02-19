@@ -6,6 +6,7 @@
     <link rel="icon" href="{{ asset('themes/base/images/favicon.ico') }}">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="active-menu" content="{{ $page->getMenuActive()  }}">
     {{--set title--}}
     <title>{{ $page->generateTitle() }}</title>
     {{--generate css--}}

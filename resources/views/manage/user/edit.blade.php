@@ -28,7 +28,7 @@
                     @include('layouts.notification.base_notification')
                     {{--end include notification--}}
                     <!-- form start -->
-                    {!! Form::model($user ,['method' => 'PATCH','route' => ['manage.user.update', $user->user_login_id ], 'class' => 'validation-wizard wizard-circle','enctype'=>'multipart/form-data', 'id' => 'edit-user']) !!}
+                    {!! Form::model($user ,['method' => 'PATCH','route' => ['manage.user.update', $user->id ], 'class' => 'validation-wizard wizard-circle','enctype'=>'multipart/form-data', 'id' => 'edit-user']) !!}
                         @include('manage.user.form',['textButton' => 'Simpan', 'icon' => 'mdi mdi-plus'])
                     {!! Form::close() !!}
                     </div>

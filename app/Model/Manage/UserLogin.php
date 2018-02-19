@@ -41,4 +41,9 @@ class UserLogin extends Authenticatable
     {
         return $this->belongsToMany('App\Model\Manage\Role', 'user_role', 'user_login_id', 'role_id')->withPivot('role_id','user_login_id');
     }
+
+    public function logs()
+    {
+        return $this->hasMany('App\Libs\LogLib\Model\Log');
+    }
 }

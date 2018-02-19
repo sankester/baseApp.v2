@@ -59,6 +59,7 @@ class BaseAdminController extends Controller
             ['path' =>'themes/base/assets/vendor_components/fastclick/lib/fastclick.js'],
             ['path' =>'themes/base/js/template.js'],
             ['path' =>'themes/base/js/demo.js'],
+            ['path' =>'js/base/general/active_menu.js'],
         ];
         $this->loadJs($Js);
     }
@@ -69,9 +70,10 @@ class BaseAdminController extends Controller
         $menu = MenuRepositories::getMenuByUrl($currentUrl);
         if($menu){
             $this->page->setDefaultTitle($menu->portal->site_title);
+            $this->page->setTitle($menu->menu_title);
         }
 
-        isset($menu->portal_id) ?  $this->menuActive = $menu->id : $this->menuActive  ;
+        isset($menu->portal_id) ?  $this->setMenuActive($menu->id ) : $this->menuActive  ;
         $this->assign('activeMenu', $this->menuActive);
     }
 

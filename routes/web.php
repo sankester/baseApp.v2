@@ -45,4 +45,7 @@ Route::prefix('base')->group(function () {
     // user
     Route::resource('manage/user', 'Manage\UserController', ['as' => 'manage']);
     Route::post('manage/user/search', 'Manage\UserController@search')->name('manage.user.search');
+    // profile
+    Route::get('user/profile', 'User\BaseProfileController@show')->name('base.user.profile');
+    Route::put('user/profile', 'User\BaseProfileController@update')->name('base.user.profile.update');
 });

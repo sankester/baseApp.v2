@@ -62,6 +62,9 @@ class RoleRepositories extends BaseRepositories
             if($request->has('permission_id')){
                 $role->permission()->sync($request->permission_id);
             }
+            // replace session menu
+            $menuRepositories = new MenuRepositories();
+            session()->put('list_menu', $menuRepositories->generateMenu(0));
             // return true
             return true;
         }
@@ -78,6 +81,9 @@ class RoleRepositories extends BaseRepositories
             if($request->has('permission_id')){
                 $role->permission()->sync($request->permission_id);
             }
+            // replace session menu
+            $menuRepositories = new MenuRepositories();
+            session()->put('list_menu', $menuRepositories->generateMenu(0));
             // return true
             return true;
         }

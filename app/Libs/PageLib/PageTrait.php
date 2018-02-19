@@ -50,6 +50,11 @@ trait PageTrait
         $this->page = new Page();
     }
 
+    public function setMenuActive($menuID)
+    {
+        $this->menuActive = $menuID;
+        $this->page->menuActive = $menuID;
+    }
     /**
      * Add data to parsing in view
      * @param $key

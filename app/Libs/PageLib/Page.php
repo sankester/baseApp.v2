@@ -18,7 +18,7 @@ use App\Libs\PageLib\Data\Js;
  */
 class Page
 {
-
+    public $menuActive = 0;
     /**
      * List Css
      * @var array
@@ -65,6 +65,12 @@ class Page
     {
         $this->meta = new MetaRepository();
         $this->pageBreadcumb = new Breadcumb();
+    }
+
+    // get menu active
+    public function getMenuActive()
+    {
+        return $this->menuActive;
     }
 
     /**

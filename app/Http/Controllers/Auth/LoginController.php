@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Model\Manage\Menu;
+use App\Repositories\Manage\MenuRepositories;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,6 +77,9 @@ class LoginController extends Controller
         if($roleAccess != false){
             // set seesion
             $request->session()->put('role_active', $roleAccess);
+            // set menu
+            $menuRepositories = new MenuRepositories();
+            $request->session()->put('list_menu', $menuRepositories->generateMenu(0));
             // jika ada
             $this->redirectTo = $roleAccess->default_page;
         }else{

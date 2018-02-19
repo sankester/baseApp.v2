@@ -27,6 +27,8 @@ class MenuRepositories extends BaseRepositories
     // active status menu
     private $isActive = false;
 
+    private $isAccessChild = true;
+
     // permission role
     private $permissionRole ;
 
@@ -40,6 +42,18 @@ class MenuRepositories extends BaseRepositories
     public function setIsActive($isActive)
     {
         $this->isActive = $isActive;
+    }
+
+    // is access child menu
+    public function isAccessChild()
+    {
+        return $this->isAccessChild;
+    }
+
+    // is access child menu
+    public function setAccessChild($isAccessChild)
+    {
+        $this->isAccessChild = $isAccessChild;
     }
 
     // ambil data menu berdasarkan portal format object
@@ -73,8 +87,8 @@ class MenuRepositories extends BaseRepositories
                 $returnMenu .= '<tr><td><div class="checkbox">';
                 // cek apakah ada permission
                 if(! $menu->permission->isEmpty() ){
-                    $returnMenu .= '<input  type="checkbox" id="'.$menu->id.'" class="chk-col-green r-menu checked-all " value="'.$menu->id.'">';
-                    $returnMenu .= '<label for="'.$menu->id.'"></label>';
+                    $returnMenu .= '<input  type="checkbox" id="all-'.$menu->id.'" class="chk-col-green r-menu checked-all " value="'.$menu->id.'">';
+                    $returnMenu .= '<label for="all-'.$menu->id.'"></label>';
                 }
                 $returnMenu .= '</div></td><td>'.$menu->menu_title.'</td><td><div class="checkbox">';
                 foreach ($menu->permission as $access){
@@ -149,6 +163,8 @@ class MenuRepositories extends BaseRepositories
             if(isset($data->children)){
                 $this->updateSortable($data->children , $data->id);
             }
+            // replace session
+            session()->put('list_menu', $this->generateMenu(0));
         }
     }
 
@@ -209,10 +225,6 @@ class MenuRepositories extends BaseRepositories
                 if($this->cekFullAccessMenu($menu->permission) == false){
                     continue;
                 }
-                if(!empty($menu->menu_group) && $menu->menu_group != $menuGroup){
-                    $html .= ' <li class="header ">'.$menu->menu_group.'</li>';
-                    $menuGroup = $menu->menu_group;
-                }
                 // if access
                 $selected = ($menu->id == $activeID) ? "class='active'" : "";
                 $url = ($menu->menu_st == 'internal') ? url($menu->menu_url) : $menu->menu_url;
@@ -221,6 +233,14 @@ class MenuRepositories extends BaseRepositories
                 $expanded = '';
                 // get child
                 $str_child_html = $this->getChildMenu($menu->id, $activeID);
+                // cek is access child
+                if(! $this->isAccessChild()){
+                    continue;
+                }
+                if(!empty($menu->menu_group) && $menu->menu_group != $menuGroup){
+                    $html .= ' <li class="header ">'.$menu->menu_group.'</li>';
+                    $menuGroup = $menu->menu_group;
+                }
                 if(!empty($str_child_html)){
                     $selected = 'class="treeview"';
                     $expanded = '<span class="pull-right-container"><i class="fa fa-angle-right pull-right"></i></span>';
@@ -231,8 +251,8 @@ class MenuRepositories extends BaseRepositories
                     $this->setIsActive(false);
                 }
                 // set menu
-                $html .= '<li ' . $selected . '>';
-                $html .= '<a href="' . $url . '" target="' . $target . '"><i class="' . $icon . ' mr-5"></i><span>' . $menu->menu_title . '</span>'.$expanded.'</a>';
+                $html .= '<li id="mn-'.$menu->id.'"' . $selected . '>';
+                $html .= '<a href="' . $url . '" target="' . $target . '" class="menu-item"><i class="' . $icon . ' mr-5"></i><span>' . $menu->menu_title . '</span>'.$expanded.'</a>';
                 $html .= $str_child_html;
                 $html .= '</li>';
             }
@@ -248,14 +268,22 @@ class MenuRepositories extends BaseRepositories
         $html = '';
         if ($listMenu->isNotEmpty()) {
             $html .= '<ul class="treeview-menu">';
+            $access_id = '';
             foreach ($listMenu as $key => $menu) {
+                // continue is not access
+                if($this->cekFullAccessMenu($menu->permission) == false){
+                    continue;
+                }else{
+                    $access_id .= $menu->id;
+                }
+                // cek active menu
                 if($menu->id == $activeID){
                     $selected = "class='active'";
                     $this->setIsActive(true);
                 }else{
                     $selected = '';
                 }
-                $html .= '<li '.$selected.'>';
+                $html .= '<li id="mn-'.$menu->id.'"'.$selected.'>';
                 $url = ($menu->menu_st == 'internal') ? url($menu->menu_url) : $menu->menu_url;
                 $target = ($menu->menu_target == 'blank') ? '_blank' : '_self';
                 $html .= '<a href="' . $url . '" target="' . $target . '"><span>' . $menu->menu_title . '</span></a>';
@@ -264,6 +292,9 @@ class MenuRepositories extends BaseRepositories
                     $html .= $this->getChildMenu($menu->id, $activeID);
                 }
                 $html .= "</li>";
+            }
+            if(empty($access_id)){
+                $this->setAccessChild(false);
             }
             $html .= '</ul>';
         }
@@ -310,6 +341,8 @@ class MenuRepositories extends BaseRepositories
         $menu =  $this->getByID($id)->update($params);
         // cek update
         if($menu){
+            // replace session menu
+            session()->put('list_menu', $this->generateMenu(0));
             return $menu;
         }else{
             return false;
@@ -335,10 +368,22 @@ class MenuRepositories extends BaseRepositories
         // proses simpan
         $menu =  $this->getModel()->create($params);
         if($menu){
+            session()->put('list_menu',$this->generateMenu(0));
             return $menu;
         }else{
             return false;
         }
+    }
+
+    // proses delete
+    public function delete($id)
+    {
+        // delete
+        if($this->getByID($id)->delete()){
+            session()->put('list_menu',$this->generateMenu(0));
+            return true;
+        }
+        return false;
     }
 
     // ambil nomor urut terakhir

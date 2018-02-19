@@ -14,13 +14,14 @@
                         </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="javascript:void()">My Profile </a></li>>
+                    <li><a href="{{ route('base.user.profile') }}">My Profile </a></li>
                     <li><a href="javascript:void()">Account Setting</a></li>
                     <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
                 </ul>
             </li>
             <li class="nav-devider"></li>
-            {!! $menu->generateMenu($activeMenu) !!}
+            {{--{!! $menu->generateMenu($activeMenu) !!}--}}
+            {!! session()->get('list_menu') !!}
         </ul>
     </section>
 </aside>

@@ -4,7 +4,7 @@
     <div class="form-group row {{ $errors->has('role_nm') ? ' has-error' : '' }}">
         {!! Form::label('nama_lengkap','Nama ',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::text('nama_lengkap',null,['class' => 'form-control ' , 'required' =>'true']) !!}
+            {!! Form::text('nama_lengkap', (!empty($user->userData->nama_lengkap) ? $user->userData->nama_lengkap : '') ,['class' => 'form-control ' , 'required' =>'true']) !!}
             @if ($errors->has('nama_lengkap'))
                 <span class="help-block">
                     <strong>{{ $errors->first('nama_lengkap') }}</strong>
@@ -15,7 +15,7 @@
     <div class="form-group row {{ $errors->has('tempat_lahir') ? ' has-error' : '' }}">
         {!! Form::label('tempat_lahir','Tempat Lahir',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::text('tempat_lahir',null,['class' => 'form-control ' ,'required' =>'true']) !!}
+            {!! Form::text('tempat_lahir',(!empty($user->userData->tempat_lahir) ? $user->userData->tempat_lahir : ''),['class' => 'form-control ' ,'required' =>'true']) !!}
             @if ($errors->has('tempat_lahir'))
                 <span class="help-block">
                     <strong>{{ $errors->first('tempat_lahir') }}</strong>
@@ -26,7 +26,7 @@
     <div class="form-group row {{ $errors->has('tanggal_lahir') ? ' has-error' : '' }}">
         {!! Form::label('tanggal_lahir','Tanggal Lahir',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::text('tanggal_lahir',null,['class' => 'form-control datepicker' ,'required' =>'true']) !!}
+            {!! Form::text('tanggal_lahir',(!empty($user->userData->tempat_lahir) ? $user->userData->tanggal_lahir : ''),['class' => 'form-control datepicker' ,'required' =>'true']) !!}
             @if ($errors->has('tanggal_lahir'))
                 <span class="help-block">
                     <strong>{{ $errors->first('tanggal_lahir') }}</strong>
@@ -37,7 +37,7 @@
     <div class="form-group row {{ $errors->has('no_telp') ? ' has-error' : '' }}">
         {!! Form::label('no_telp','No Telp',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::text('no_telp',null,['class' => 'form-control ' ,'required' =>'true', 'maxlength' => '16']) !!}
+            {!! Form::text('no_telp',(!empty($user->userData->no_telp) ? $user->userData->no_telp : ''),['class' => 'form-control ' ,'required' =>'true', 'maxlength' => '16']) !!}
             @if ($errors->has('no_telp'))
                 <span class="help-block">
                     <strong>{{ $errors->first('no_telp') }}</strong>
@@ -48,7 +48,7 @@
     <div class="form-group row {{ $errors->has('jabatan') ? ' has-error' : '' }}">
         {!! Form::label('jabatan','Jabatan',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::text('jabatan',null,['class' => 'form-control ' ,'required' =>'true']) !!}
+            {!! Form::text('jabatan',(!empty($user->userData->jabatan) ? $user->userData->jabatan : ''),['class' => 'form-control ' ,'required' =>'true']) !!}
             @if ($errors->has('jabatan'))
                 <span class="help-block">
                     <strong>{{ $errors->first('jabatan') }}</strong>
@@ -59,7 +59,7 @@
     <div class="form-group row {{ $errors->has('alamat') ? ' has-error' : '' }}">
         {!! Form::label('alamat','Alamat',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            {!! Form::textarea('alamat',null,['class' => 'form-control ' ,'required' =>'true']) !!}
+            {!! Form::textarea('alamat',(!empty($user->userData->alamat) ? $user->userData->alamat : ''),['class' => 'form-control ' ,'required' =>'true']) !!}
             @if ($errors->has('alamat'))
                 <span class="help-block">
                     <strong>{{ $errors->first('alamat') }}</strong>
@@ -70,9 +70,9 @@
     <div class="form-group row {{ $errors->has('foto') ? ' has-error' : '' }}">
         {!! Form::label('foto','Foto ',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-9">
-            @if(! empty($user->foto))
+            @if(! empty($user->userData->foto))
                 <div class="col-md-4 ml-0 pl-0 mb-10">
-                    Image saat ini  : <img class="img-responsive" src="{{ asset('images/avatar/thumbnail/'.$user->foto) }}" alt="Foto Profil">
+                    Image saat ini  : <img class="img-responsive" src="{{ asset('images/avatar/thumbnail/'.$user->userData->foto) }}" alt="Foto Profil">
                 </div>
             @endif
             {!! Form::file('foto',['class' => 'form-control file-styled']) !!}
@@ -162,9 +162,9 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <input name="role_id[]" type="checkbox" id="role-{{ $role->id }}" class="filled-in chk-col-green" value="{{ $role->id }}"
-                                              @if(isset($user->list_role) )
-                                                   @foreach($user->list_role as $access)
-                                                       @if($role->id == $access->role_id)
+                                              @if(isset($user->role) )
+                                                   @foreach($user->role as $access)
+                                                       @if($role->id == $access->id)
                                                             checked
                                                         @endif
                                                     @endforeach

@@ -123,7 +123,7 @@
                                         {!! Form::checkbox('crud_checkbox', 'read', false, ['class'=>'chk-col-teal', 'id' => 'read', 'v-model' => 'crudSelected']) !!}
                                         {!! Form::label('read','Read', ['class'=>'mr-10']) !!}
                                         {!! Form::checkbox('crud_checkbox', 'update', false, ['class'=>'chk-col-teal', 'id' => 'update', 'v-model' => 'crudSelected']) !!}
-                                        {!! Form::label('update','Ureate', ['class'=>'mr-10']) !!}
+                                        {!! Form::label('update','Update', ['class'=>'mr-10']) !!}
                                         {!! Form::checkbox('crud_checkbox', 'delete', false, ['class'=>'chk-col-teal', 'id' => 'delete', 'v-model' => 'crudSelected']) !!}
                                         {!! Form::label('delete','Delete', ['class'=>'mr-10']) !!}
                                     </div>
