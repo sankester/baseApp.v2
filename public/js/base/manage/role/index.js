@@ -103,4 +103,27 @@ $(document).ready(function () {
             }
         });
     });
+
+    var $sortable = $(".fx-element-overlay");
+
+    $sortable.sortable({
+        stop : function (event , ui) {
+            // set paramete
+            var parameters = $sortable.sortable("toArray");
+            var data_url =  $('#sortable-url').text();
+            var data_token =  $('meta[name=csrf-token]').attr('content');
+            // proses update
+            $.ajax({
+                url: data_url,
+                type: 'PUT',
+                data: {_method: 'PUT', _token: data_token,  list : parameters},
+                success: function (data) {
+
+                },
+                error:function(data){
+
+                }
+            });
+        }
+    });
 });

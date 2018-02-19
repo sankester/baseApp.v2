@@ -290,6 +290,7 @@ class MenuRepositories extends BaseRepositories
         return $menu;
     }
 
+    // get menu berdasarkan ID static method
     public static function getMenuByID($menuID)
     {
         return Menu::findOrFail($menuID);
@@ -316,7 +317,7 @@ class MenuRepositories extends BaseRepositories
     }
 
     // proses simpan
-    public function create(Request $request)
+    public function create(Request $request, $column = '')
     {
         // set params
         $params =  $request->all();

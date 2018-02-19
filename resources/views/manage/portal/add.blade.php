@@ -6,8 +6,7 @@
             Portal
         </h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Manage</a></li>
+            <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Manajement Aplikasi</a></li>
             <li class="breadcrumb-item"><a href="{{ route('manage.portal.index') }}">Portal</a></li>
             <li class="breadcrumb-item active">Tambah Data</li>
         </ol>

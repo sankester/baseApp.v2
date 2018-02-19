@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Http\Requests\Manage\PortalRequest;
+use App\Libs\LogLib\LogRepository;
+use App\Libs\LogLib\Model\Log;
 use App\Repositories\Manage\PortalRepositories;
+use Faker\Provider\Lorem;
 use Illuminate\Http\Request;
 
 class PortalController extends BaseAdminController
@@ -31,6 +34,8 @@ class PortalController extends BaseAdminController
      */
     public function index()
     {
+        // set permission
+        $this->setPermission('read-portal');
         // set page template
         $this->setTemplate('manage.portal.index');
         // load js
@@ -51,6 +56,8 @@ class PortalController extends BaseAdminController
      */
     public function create()
     {
+        // set permission
+        $this->setPermission('create-portal');
         // set page template
         $this->setTemplate('manage.portal.add');
         // load js
@@ -68,8 +75,13 @@ class PortalController extends BaseAdminController
      */
     public function store(PortalRequest $request)
     {
+        // set permission
+        $this->setPermission('create-portal');
         // proses tambah portal ke database
         if($this->repositories->create($request)){
+            // save log
+            LogRepository::addLog('insert', 'Menambahkan portal '.$request->portal_nm);
+            // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
         }else{
             $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah portal.']);
@@ -84,6 +96,8 @@ class PortalController extends BaseAdminController
      */
     public function edit($portalId)
     {
+        // set permission
+        $this->setPermission('update-portal');
         // set template
         $this->setTemplate('manage.portal.edit');
         // load js
@@ -99,6 +113,8 @@ class PortalController extends BaseAdminController
     // detail portal
     public function show(Request $request, $portalID)
     {
+        // set permission
+        $this->setPermission('read-portal');
         // cek apakah ajax request
         if ($request->ajax()) {
             // get data
@@ -152,8 +168,12 @@ class PortalController extends BaseAdminController
      */
     public function update(PortalRequest $request, $portalId)
     {
+        // set permission
+        $this->setPermission('update-portal');
         // proses update data portal di database
         if($this->repositories->update($request, $portalId)){
+            // save log
+            LogRepository::addLog('update', 'Merubah data portal '.$request->portal_nm);
             // set notifikasi success
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
         }else{
@@ -168,11 +188,15 @@ class PortalController extends BaseAdminController
      * Remove the specified resource from storage.
      */
     public function destroy($portalId, PortalRequest $request)
-    {
+    {      // set permission
+        $this->setPermission('delete-portal');
         // cek apakah ajax request
         if ($request->ajax()){
+            $portalName = $this->repositories->getByID($portalId)->portal_nm;
             // proses hapus portal dari database
             if($this->repositories->delete($portalId)){
+                // save log
+                LogRepository::addLog('delete','Menghapus portal'.$portalName);
                 // set response
                 return response(['message' => 'Berhasil menghapus portal.', 'status' => 'success']);
             }

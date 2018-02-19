@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Http\Requests\Manage\UserRequest;
+use App\Libs\LogLib\LogRepository;
 use App\Repositories\Manage\PortalRepositories;
 use App\Repositories\Manage\RoleRepositories;
 use App\Repositories\Manage\UserRepositories;
@@ -33,6 +34,8 @@ class UserController extends BaseAdminController
     // get list user
     public function index(RoleRepositories $roleRepositories)
     {
+        // set permission
+        $this->setPermission('read-user');
         // set template
         $this->setTemplate('manage.user.index');
         // load js
@@ -60,6 +63,8 @@ class UserController extends BaseAdminController
     // proses cari
     public function search(Request $request)
     {
+        // set permission
+        $this->setPermission('read-user');
         // cek input dengan nama search
         if($request->has('search')){
             // validate input
@@ -84,6 +89,8 @@ class UserController extends BaseAdminController
     // show add form
     public function create(PortalRepositories $portalRepositories)
     {
+        // set permission
+        $this->setPermission('create-user');
         // set page template
         $this->setTemplate('manage.user.add');
         // load js
@@ -115,10 +122,16 @@ class UserController extends BaseAdminController
     // proses insert
     public function store(UserRequest $request)
     {
+        // set permission
+        $this->setPermission('create-user');
         // proses tambah user ke database
         if($this->repositories->create($request)){
+            // save log
+            LogRepository::addLog('insert', 'Menambahakan user ', $request->nama_lengkap);
+            // set succes notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah user.']);
         }else{
+            // set error message
             $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah user.']);
         }
         // redirect page
@@ -128,6 +141,8 @@ class UserController extends BaseAdminController
     // show add form
     public function edit(PortalRepositories $portalRepositories, $userID)
     {
+        // set permission
+        $this->setPermission('update-user');
         // set page template
         $this->setTemplate('manage.user.edit');
         // load js
@@ -158,20 +173,30 @@ class UserController extends BaseAdminController
         return $this->displayPage();
     }
 
+    // proses update user
     public function update(UserRequest $request, $userID)
     {
+        // set permission
+        $this->setPermission('update-user');
         // proses tambah user ke database
         if($this->repositories->update($request, $userID)){
+            // save log
+            LogRepository::addLog('update', 'Merubad data user '.$request->nama_lengkap);
+            // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil ubah user.']);
         }else{
+            // set error notification
             $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal ubah user.']);
         }
         // redirect page
         return redirect()->route('manage.user.edit', $userID);
     }
 
+    // ambil detail user
     public function show(Request $request, PortalRepositories $portalRepositories, $userID)
     {
+        // set permission
+        $this->setPermission('read-user');
         // cek apakah ajax request
         if ($request->ajax()) {
             // get data
@@ -243,10 +268,16 @@ class UserController extends BaseAdminController
     // proses delete user
     public function destroy(Request $request, $userID)
     {
+        // set permission
+        $this->setPermission('delete-user');
         // cek apakah ajax request
         if ($request->ajax()){
+            // get user nama
+            $user = $this->repositories->getByID($userID)->with('userData');
             // proses hapus user dari database
             if($this->repositories->delete($userID)){
+                // save log
+                LogRepository::addLog('delete', 'Menghapus user '.$user->userData->nama_lengkap);
                 // set response
                 return response(['message' => 'Berhasil menghapus user.', 'status' => 'success']);
             }

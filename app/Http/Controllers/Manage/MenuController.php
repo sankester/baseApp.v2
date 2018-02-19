@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Http\Requests\Manage\MenuRequest;
-use App\Model\Manage\Portal;
+use App\Libs\LogLib\LogRepository;
+use App\Libs\LogLib\Model\Log;
 use App\Repositories\Manage\MenuRepositories;
 use App\Repositories\Manage\PortalRepositories;
 use Illuminate\Http\Request;
@@ -26,6 +27,8 @@ class MenuController extends BaseAdminController
     // tampilkan list role
     public function index(PortalRepositories $portalRepositories)
     {
+        // set permission
+        $this->setPermission('read-menu');
         // set page template
         $this->setTemplate('manage.menu.index');
         //set page title
@@ -41,6 +44,8 @@ class MenuController extends BaseAdminController
     // proses cari
     public function search(Request $request)
     {
+        // set permission
+        $this->setPermission('read-menu');
         // cek input dengan nama search
         if($request->has('search')){
             // validate input
@@ -59,6 +64,8 @@ class MenuController extends BaseAdminController
     // show form add
     public function create(PortalRepositories $portalRepositories, $portalId)
     {
+        // set permission
+        $this->setPermission('create-menu');
         // set page template
         $this->setTemplate('manage.menu.add');
         // load css
@@ -88,8 +95,12 @@ class MenuController extends BaseAdminController
     // proses simpan
     public function store(MenuRequest $request)
     {
+        // set permission
+        $this->setPermission('create-menu');
         // proses tambah menu ke database
         if($this->repositories->create($request)){
+            // save log
+            LogRepository::addLog('create', 'Menambahkan menu '. $request->menu_nm);
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah role.']);
         }else{
@@ -103,6 +114,8 @@ class MenuController extends BaseAdminController
     // tampilkan detail menu by menu
     public function show(PortalRepositories $portalRepositories, $portalId)
     {
+        // set permission
+        $this->setPermission('update-menu');
         // set page template
         $this->setTemplate('manage.menu.detail');
         // load js
@@ -125,6 +138,8 @@ class MenuController extends BaseAdminController
     // get detail menu
     public function detail(Request $request,$menuID)
     {
+        // set permission
+        $this->setPermission('read-menu');
         // cek apakah ajax request
         if ($request->ajax()){
             // get data
@@ -182,18 +197,24 @@ class MenuController extends BaseAdminController
     // atur urutan menu
     public function sortable(Request $request)
     {
+        // set permission
+        $this->setPermission('update-menu');
         // cek apakah ajax request
         if ($request->ajax()){
             // get new list
             $listMenu = json_decode($request->list);
             // proses update
             $this->repositories->updateSortable($listMenu);
+            // save log
+            LogRepository::addLog('update', 'Merubah urutan menu');
         }
     }
 
     // show edit form
     public function edit($portalId, $menuId, PortalRepositories $portalRepositories)
     {
+        // set permission
+        $this->setPermission('update-menu');
         // set page template
         $this->setTemplate('manage.menu.edit');
         // load css
@@ -225,8 +246,12 @@ class MenuController extends BaseAdminController
     // proses update manu
     public function update(MenuRequest $request, $menuId)
     {
+        // set permission
+        $this->setPermission('update-menu');
         // proses edit menu ke database
         if($this->repositories->update($request, $menuId)){
+            // save log
+            LogRepository::addLog('update', 'Mengubah data menu '.$request->menu_nm);
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil mengupdate role.']);
         }else{
@@ -240,10 +265,16 @@ class MenuController extends BaseAdminController
     // proses ajax hapus
     public function destroy(Request $request, $menuId)
     {
+        // set permission
+        $this->setPermission('delete-menu');
         // cek apakah ajax request
         if ($request->ajax()){
+            // get nama menu
+            $namaMenu = $this->repositories->getByID($menuId)->menu_nm;
             // proses hapus menu dari database
             if($this->repositories->delete($menuId)){
+                // save log
+                LogRepository::addLog('delete', 'Menghapus menu '.$namaMenu);
                 // set response
                 return response(['message' => 'Berhasil menghapus menu.', 'status' => 'success']);
             }
@@ -255,6 +286,8 @@ class MenuController extends BaseAdminController
     // getlist menu by menu
     public function getListMenu(Request $request)
     {
+        // set permission
+        $this->setPermission('read-menu');
         // cek apakah ajax request
         if ($request->ajax()){
             // cek data param

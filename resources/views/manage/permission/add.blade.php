@@ -6,8 +6,8 @@
             Permission
         </h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Manage</a></li>
+            <li class="breadcrumb-item"><a href="#">Manajement Akses</a></li>
+            <li class="breadcrumb-item"><a href="#">Role & Permission</a></li>
             <li class="breadcrumb-item"><a href="{{ route('manage.permission.index') }}">Permission</a></li>
             <li class="breadcrumb-item active">Tambah Data</li>
         </ol>

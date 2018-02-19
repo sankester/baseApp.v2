@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Http\Requests\Manage\RoleRequest;
-use App\Model\Manage\Role;
+use App\Libs\LogLib\LogRepository;
+use App\Libs\LogLib\Model\Log;
 use App\Repositories\Manage\MenuRepositories;
 use App\Repositories\Manage\PortalRepositories;
 use App\Repositories\Manage\RoleRepositories;
@@ -27,11 +28,14 @@ class RoleController extends BaseAdminController
     // tampilkan list role
     public function index(PortalRepositories $portalRepositories)
     {
+        // set permission
+        $this->setPermission('read-role');
         // set page template
         $this->setTemplate('manage.role.index');
         // load js
         $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
         $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
+        $this->loadJs('/themes/base/assets/vendor_plugins/jQueryUI/jquery-ui.min.js');
         $this->loadJs('js/base/manage/role/index.js');
         //set page title
         $this->page->setTitle('Manajemen Role');
@@ -50,6 +54,8 @@ class RoleController extends BaseAdminController
     // proses cari
     public function search(Request $request)
     {
+        // set permission
+        $this->setPermission('read-role');
         // cek input dengan nama search
         if($request->has('search')){
             // validate input
@@ -65,9 +71,29 @@ class RoleController extends BaseAdminController
         return redirect()->route('manage.role.index');
     }
 
+    // proses update prioritas
+    public function sortProccess(Request $request)
+    {
+        // cek ajax
+        if($request->ajax()){
+            // set permission
+            $this->setPermission('update-role');
+            // loop for update
+            foreach ($request->list as $key => $role) {
+                // set params
+                $params['role_prioritas'] = $key + 1;
+                $this->repositories->updateSortable($params, $role);
+            }
+        }
+        // default response
+        return response(['message' => 'Gagal menghapus role', 'status' => 'failed']);
+    }
+
     // show form add
     public function create(PortalRepositories $portalRepositories, MenuRepositories $menuRepositories)
     {
+        // set permission
+        $this->setPermission('create-role');
         // set page template
         $this->setTemplate('manage.role.add');
         // load js
@@ -92,8 +118,12 @@ class RoleController extends BaseAdminController
     // proses simpan
     public function store(RoleRequest $request)
     {
+        // set permission
+        $this->setPermission('create-role');
         // proses tambah role ke database
         if($this->repositories->create($request)){
+            // save log
+            LogRepository::addLog('insert', 'Menambahkan role '.$request->role_nm);
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah role.']);
         }else{
@@ -107,6 +137,8 @@ class RoleController extends BaseAdminController
     // get list permission ajax
     public function getListPermissionAjax(Request $request, MenuRepositories $menuRepositories)
     {
+        // set permission
+        $this->setPermission('read-role');
         // cek apakah ajax request
         if ($request->ajax()){
             // cek data param
@@ -124,6 +156,8 @@ class RoleController extends BaseAdminController
 
     public function show(Request $request, $roleID)
     {
+        // set permission
+        $this->setPermission('read-role');
         // cek apakah ajax request
         if ($request->ajax()){
             // get data
@@ -173,6 +207,8 @@ class RoleController extends BaseAdminController
     // show edit form
     public function edit(PortalRepositories $portalRepositories, MenuRepositories $menuRepositories, $roleId)
     {
+        // set permission
+        $this->setPermission('update-role');
         // set page template
         $this->setTemplate('manage.role.edit');
         // load js
@@ -199,8 +235,12 @@ class RoleController extends BaseAdminController
     // update role
     public function update(RoleRequest $request, $roleId)
     {
+        // set permission
+        $this->setPermission('update-role');
         // proses tambah role ke database
         if($this->repositories->update($request, $roleId)){
+            // save log
+            LogRepository::addLog('update', 'Mengupdate role '.$request->role_nm);
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil ubah role.']);
         }else{
@@ -214,10 +254,16 @@ class RoleController extends BaseAdminController
     // proses delete role
     public function destroy(Request $request, $roleId)
     {
+        // set permission
+        $this->setPermission('delete-role');
         // cek apakah ajax request
         if ($request->ajax()){
+            // get role name
+            $roleName = $this->repositories->getByID($roleId)->role_nm;
             // proses hapus role dari database
             if($this->repositories->delete($roleId)){
+                // save log
+                LogRepository::addLog('delete', 'Menghapus role '.$roleName);
                 // set response
                 return response(['message' => 'Berhasil menghapus role.', 'status' => 'success']);
             }

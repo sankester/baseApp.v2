@@ -11,7 +11,7 @@ class Role extends Model
     protected $table = 'role';
 
     // set fillable column
-    protected $fillable = ['portal_id','role_nm', 'role_desc','default_page'];
+    protected $fillable = ['portal_id','role_nm','role_prioritas','role_desc','default_page'];
 
     // set relation portal
     public function portal()

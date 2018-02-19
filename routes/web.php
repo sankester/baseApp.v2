@@ -28,7 +28,8 @@ Route::prefix('base')->group(function () {
     Route::resource('manage/portal', 'Manage\PortalController', ['as' => 'manage']);
     // role
     Route::resource('manage/role', 'Manage\RoleController', ['as' => 'manage']);
-    Route::post('/manage/role/search', 'Manage\RoleController@search')->name('manage.role.search');
+    Route::post('manage/role/search', 'Manage\RoleController@search')->name('manage.role.search');
+    Route::put('/manage/role/sort/process', 'Manage\RoleController@sortProccess')->name('manage.role.sort');
     Route::post('/manage/role/getListPermission', 'Manage\RoleController@getListPermissionAjax')->name('manage.role.getPermission');
     // menu
     Route::resource('manage/menu', 'Manage\MenuController', ['except' => ['create', 'edit', 'update'],'as' => 'manage']);

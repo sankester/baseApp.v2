@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manage;
 
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Http\Requests\Manage\PermissionRequest;
+use App\Libs\LogLib\LogRepository;
 use App\Model\Manage\Menu;
 use App\Repositories\Manage\MenuRepositories;
 use App\Repositories\Manage\PermissionRepositories;
@@ -25,6 +26,8 @@ class PermissionController extends BaseAdminController
     // tampilkan list permission
     public function index(PortalRepositories $portalRepositories)
     {
+        // set permission
+        $this->setPermission('read-permission');
         // set page template
         $this->setTemplate('manage.permission.index');
         // load js
@@ -52,6 +55,8 @@ class PermissionController extends BaseAdminController
     // proses cari
     public function search(Request $request)
     {
+        // set permission
+        $this->setPermission('read-permission');
         // cek input dengan nama search
         if($request->has('search')){
             // validate input
@@ -75,6 +80,8 @@ class PermissionController extends BaseAdminController
     // show form create
     public function create(PortalRepositories $portalRepositories)
     {
+        // set permission
+        $this->setPermission('create-permission');
         // set page template
         $this->setTemplate('manage.permission.add');
         // load js
@@ -103,6 +110,8 @@ class PermissionController extends BaseAdminController
     // proses insert
     public function store(PermissionRequest $request)
     {
+        // set permission
+        $this->setPermission('create-permission');
         // cek permission type
         if($request->permission_type == 'basic'){
             $permission = $this->repositories->createPermission($request->all());
@@ -114,6 +123,8 @@ class PermissionController extends BaseAdminController
                         $permission->menu()->attach($menu);
                     }
                 }
+                // save log
+                LogRepository::addLog('insert', 'Menambahkan basic permission '.$request->permission_nm);
                 // set notifikasi success
                 $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah permission.']);
             }else{
@@ -144,6 +155,8 @@ class PermissionController extends BaseAdminController
                             $permission->menu()->attach($menu);
                         }
                     }
+                    // save log
+                    LogRepository::addLog('insert','Menambahkan resource permission '.$request->resource);
                     // set notifikasi success
                     $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah permission.']);
                 }
@@ -161,6 +174,8 @@ class PermissionController extends BaseAdminController
     // show form edit
     public function edit(MenuRepositories $menuRepositories, $permissionId)
     {
+        // set permission
+        $this->setPermission('update-permission');
         // set page template
         $this->setTemplate('manage.permission.edit');
         // load js
@@ -200,8 +215,12 @@ class PermissionController extends BaseAdminController
     // proses update
     public function update(PermissionRequest $request, $permissionId)
     {
+        // set permission
+        $this->setPermission('update-permission');
         // proses update
         if($this->repositories->updatePermission($permissionId,$request)){
+            // save log
+            LogRepository::addLog('update', 'Mengubah data permission '.$request->permission_nm);
             // set notifikasi success
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil edit permission.']);
         }else{
@@ -215,10 +234,16 @@ class PermissionController extends BaseAdminController
     // proses hapus
     public function destroy($permissionId, PermissionRequest $request)
     {
+        // set permission
+        $this->setPermission('delete-permission');
         // cek apakah ajax request
         if ($request->ajax()){
+            // get nama permission
+            $permissionName = $this->repositories->getByID($permissionId)->permission_nm;
             // proses hapus permission dari database
             if($this->repositories->delete($permissionId)){
+                // save log
+                LogRepository::addLog('delete', 'Menghapus permission '.$permissionName);
                 // set response
                 return response(['message' => 'Berhasil menghapus portal.', 'status' => 'success']);
             }

@@ -17,6 +17,7 @@ class CreateRoleTable extends Migration
             $table->increments('id');
             $table->integer('portal_id')->unsigned();
             $table->string('role_nm');
+            $table->string('role_prioritas');
             $table->string('role_desc');
             $table->string('default_page');
             $table->timestamps();

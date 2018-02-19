@@ -6,8 +6,8 @@
             Role
         </h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-dashboard"></i> Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Manage</a></li>
+            <li class="breadcrumb-item"><a href="#">Manajement Akses</a></li>
+            <li class="breadcrumb-item"><a href="#">Role & Permission</a></li>
             <li class="breadcrumb-item active">Role</li>
         </ol>
     </section>
@@ -93,6 +93,7 @@
                     </div>
                 @endforeach
             </div>
+            <div id="sortable-url" style="display: none;">{{ route('manage.role.sort') }}</div>
         @endif
     </section>
     {{--include modal--}}
