@@ -34,8 +34,14 @@ class RoleRepositories extends BaseRepositories
                 $resultModel = $this->getData($resultModel, $condition,$operator,$value,$clause,$relation,$id);
             }
         }
-        // return paginate
-        return  $resultModel->orderBy('role_prioritas')->paginate($perPage);
+        if( session()->get('role_active')->role_prioritas != 1){
+            // return paginate
+            return  $resultModel->where('role_prioritas', '>', session()->get('role_active')->role_prioritas)->orderBy('role_prioritas')->paginate($perPage);
+        }else{
+            // return paginate
+            return  $resultModel->orderBy('role_prioritas')->paginate($perPage);
+        }
+
     }
 
     // get all role select
@@ -105,6 +111,21 @@ class RoleRepositories extends BaseRepositories
         $role = $this->getModel()->where('portal_id' , $portalID)->orderBy('role_prioritas', 'desc')->first();
         $number = (is_null($role)) ? 0 : $role->role_prioritas;
         return $number + 1;
+    }
+
+    // cek role prioritas
+    public function cekRolePrioritas($roleID)
+    {
+        // get role id
+        $role = $this->getByID($roleID);
+        $roleCek = $role->id;
+        // cek session
+        if( session()->get('role_active')->role_prioritas  > $roleCek || session()->get('role_active')->role_prioritas == '1'){
+            // set return
+            return true;
+        }
+        // default return
+        return false;
     }
 
 }

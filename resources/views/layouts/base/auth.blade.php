@@ -36,7 +36,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="../../index.html"><b>Base </b>App</a>
+        <a href="{{ url('/') }}"><b>Base </b>Admin</a>
     </div>
     <!-- /.login-logo -->
     <div class="login-box-body">
@@ -51,7 +51,7 @@
 <script src="{{ asset('themes/base/assets/vendor_components/jquery/dist/jquery.min.js') }}"></script>
 
 <!-- popper -->
-    <script src="{{ asset('themes/base/assets/vendor_components/popper/dist/popper.min.js') }}"></script>
+<script src="{{ asset('themes/base/assets/vendor_components/popper/dist/popper.min.js') }}"></script>
 
 <!-- Bootstrap 4.0-->
 <script src="{{ asset('themes/base/assets/vendor_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>

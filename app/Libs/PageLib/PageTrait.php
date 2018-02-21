@@ -73,7 +73,7 @@ trait PageTrait
     protected function displayPage()
     {
         if ($this->isAccess == false) {
-            return redirect( $this->errorUrl . $this->errorCode . '/' .$this->errorMenu);
+            return redirect( $this->errorUrl . $this->errorCode . '/' .$this->errorMenu)->with('errorMessage', $this->errorMessage);
         } else {
             $this->assign('page', $this->page);
             return view($this->template, $this->data);

@@ -83,7 +83,9 @@ class BaseAdminController extends Controller
     {
         // cek result
         if($this->validatePage($this->menuActive) == true) :
-            return $this->validateAccess($permission,'base/forbidden/page/');
+            if($this->validateAccess($permission) == false) :
+                return $this->setErrorAccess('base/forbidden/page/', $this->request,'maaf, anda tidak  mempunyai akses penuh untuk halaman ini', '403', $this->menuActive);
+            endif;
         else :
             // cek request
             return $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, halaman yang anda request tidak tersedia.','404');

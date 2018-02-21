@@ -29,9 +29,9 @@
                     <div class="box-header with-border">
                         <h5 class="box-title">Cari Permission</h5>
                     </div>
-                    {!!  Form::open(['route' => 'manage.permission.search']) !!}
                     <!-- /.box-header -->
                     <div class="box-body">
+                        {!!  Form::open(['route' => 'manage.permission.search']) !!}
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group row ">
@@ -61,6 +61,7 @@
                             </div>
                             <!-- /.col -->
                         </div>
+                        {!! Form::close() !!}
                         <div class="row">
                             <div class="col-md-12">
                                 @if(count($listPermission) == 0)
@@ -115,7 +116,6 @@
                         </div>
                         <!-- /.row -->
                     </div>
-                    {!! Form::close() !!}
                     <!-- /.box-body -->
                 </div>
             </div>

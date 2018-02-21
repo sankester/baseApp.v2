@@ -23,7 +23,9 @@ class PortalRepositories extends BaseRepositories
     // get list portal with role
     public function getPortalWithRole()
     {
-        return $this->getModel()->with('role')->get();
+        return $this->getModel()->with(['role' => function($query){
+            $query->where('role_prioritas', '>=', intval(session()->get('role_active')->role_prioritas));
+        }])->get();
     }
 
     // proses insert

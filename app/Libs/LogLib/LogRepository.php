@@ -177,7 +177,7 @@ class LogRepository
      */
     public static function getLogPortal($portal_id, $perPage)
     {
-        return Log::where('portal_id', $portal_id)->latest()->paginate($perPage);
+        return Log::where('portal_id', $portal_id)->with('user.userData')->latest()->paginate($perPage);
     }
 
     /**
@@ -187,6 +187,6 @@ class LogRepository
      */
     public static function getLogUser($user_id, $perPage)
     {
-        return Log::where('user_id', $user_id)->latest()->paginate($perPage);
+        return Log::where('user_id', $user_id)->with('user.userData')->latest()->paginate($perPage);
     }
 }

@@ -26,6 +26,21 @@ class UserRepositories extends BaseRepositories
         return UserData::select('jabatan')->groupBy('jabatan')->get();
     }
 
+    // cek role prioritas
+    public function cekRolePrioritas($userID)
+    {
+        // get role id
+        $role = $this->getByID($userID)->role;
+        $roleCek = $role->first()->id;
+        // cek session
+        if(session()->get('role_active')->role_prioritas < $roleCek || session()->get('role_active')->role_prioritas <= '2'){
+            // set return
+            return true;
+        }
+        // default return
+        return false;
+    }
+
     // get list
     public function getListPaginate($perPage = 10, ...$params)
     {
@@ -35,7 +50,12 @@ class UserRepositories extends BaseRepositories
                     $query->where('nama_lengkap','like' , $params[1]);
                 })
                 ->whereHas('role', function ($query) use ($params){
-                    $query->where('id','like' ,$params[2]);
+                    if( session()->get('role_active')->role_prioritas != 1){
+                        $query->where('id','like' ,$params[2])
+                            ->where('role_prioritas' ,'>', session()->get('role_active')->role_prioritas);
+                    }else{
+                        $query->where('id','like' ,$params[2]);
+                    }
                 })
                 ->with('userData','role')->paginate($perPage);
     }

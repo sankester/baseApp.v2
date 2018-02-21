@@ -12,47 +12,56 @@
 </section>
 <!-- Main content -->
 <section class="content">
-    <!-- Default box -->
-    <div class="box">
-        <div class="box-header with-border">
-            <h3 class="box-title">Title</h3>
-            <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
-            </div>
-        </div>
-        <div class="box-body">
-            @if (session('status'))
-                <div class="alert alert-success">
-                    {{ session('status') }}
+    <div class="row">
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-teal"><i class="ion ion-person-stalker"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-text">User</span>
                 </div>
-            @endif
-            <p class="text-center">
-                You are logged in<!doctype html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport"
-                          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-                    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-                    <title>Document</title>
-                </head>
-                <body>
-                
-                </body>
-                </html>
-            </p>
-            <pre>
-                {!! print_r($user) !!}
-            </pre>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
         </div>
-        <!-- /.box-body -->
-        <div class="box-footer">
-            Footer
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-info"><i class="ion ion-ios-people"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-text">Role</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
         </div>
-        <!-- /.box-footer-->
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-red"><i class="ion ion-key"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-text">Permission</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <div class="col-xl-3 col-md-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-success">
+                    <i class="ion ion-grid"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-text">Menu</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
     </div>
-    <!-- /.box -->
 
 </section>
 <!-- /.content -->

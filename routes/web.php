@@ -45,7 +45,13 @@ Route::prefix('base')->group(function () {
     // user
     Route::resource('manage/user', 'Manage\UserController', ['as' => 'manage']);
     Route::post('manage/user/search', 'Manage\UserController@search')->name('manage.user.search');
+    // preference
+    Route::resource('manage/preference', 'Manage\PreferenceController', ['except' => 'show','as' => 'manage']);
     // profile
     Route::get('user/profile', 'User\BaseProfileController@show')->name('base.user.profile');
     Route::put('user/profile', 'User\BaseProfileController@update')->name('base.user.profile.update');
+    Route::get('user/profile/switch/{roleID}', 'User\BaseProfileController@switchRole')->name('base.user.switch.role');
+    Route::get('user/profile/logportal', 'User\BaseProfileController@logPortal')->name('base.user.logportal');
+    Route::get('user/profile/loguser', 'User\BaseProfileController@logUser')->name('base.user.loguser');
+    Route::patch('user/profile/updateData', 'User\BaseProfileController@updateData')->name('base.user.updatedata');
 });

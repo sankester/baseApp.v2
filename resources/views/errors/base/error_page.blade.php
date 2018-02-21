@@ -8,8 +8,13 @@
 
                     <h2 class="headline text-red">{!! $data['code'] !!}</h2>
 
-                    <h3 class="margin-top-0"><i class="fa fa-warning text-red"></i> {!! $data['message'] !!}</h3>
-
+                    <h3 class="margin-top-0"><i class="fa fa-warning text-red"></i>
+                        @if(session()->has('errorMessage'))
+                            {{ session()->get('errorMessage') }}
+                        @else
+                            {!! $data['message'] !!}
+                        @endif
+                    </h3>
                     <div class="text-center">
                         <a href="{{ url(session()->get('role_active')->default_page) }}" class="btn btn-info btn-block margin-top-10">Kembali ke halaman utama.</a>
                     </div>

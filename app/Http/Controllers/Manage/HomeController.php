@@ -39,7 +39,6 @@ class HomeController extends BaseAdminController
         $permission = $role->permission()->whereHas('menu', function ($query) use ($menu_id){
             $query->where('menu_id', $menu_id);
         })->get();
-        $user = Auth::user()->with('userData')->first()->toArray();
         $this->assign('user', $permission);
         // display page
         return $this->displayPage();

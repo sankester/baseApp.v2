@@ -22,6 +22,21 @@
                 </span>
             @endif
         </div>
+        <div class="form-group {{ $errors->has('captcha') ? ' has-error' : '' }}">
+            <div class="row">
+                <div class="col-md-6">
+                    {!! captcha_img('flat')  !!}
+                </div>
+                <div class="col-md-6">
+                    <input type="text" name="captcha" class="form-control control-input" placeholder="Captcha">
+                </div>
+            </div>
+            @if ($errors->has('captcha'))
+                <span class="help-block">
+                    <strong>{{ $errors->first('captcha') }}</strong>
+                </span>
+            @endif
+        </div>
         <div class="row">
             <div class="col-6">
                 <div class="checkbox">

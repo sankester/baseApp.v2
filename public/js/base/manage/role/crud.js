@@ -164,6 +164,15 @@ $(document).ready(function () {
             $(".r-menu").prop('checked', false);
         }
     });
+    //check single
+    $(".permission-role").click(function () {
+        var status = $(this).is(":checked");
+        if (status === true) {
+            $(".multi-role-p-" + $(this).val()).prop('checked', true);
+        } else {
+            $(".multi-role-p-" + $(this).val()).prop('checked', false);
+        }
+    });
     // changed row permission
     $(".checked-all").click(function () {
         var status = $(this).is(":checked");

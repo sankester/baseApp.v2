@@ -60,11 +60,13 @@ trait AuthPageTrait
     /*
      * validate access
      */
-    protected function validateAccess($rule, $errorUrl = ''){
+    protected function validateAccess($rule){
         // proses validate
         if(! $this->rolePermission->contains('permission_slug', $rule)){
-            return $this->setErrorAccess($errorUrl, $this->request,'maaf, anda tidak  mempunyai akses penuh untuk halaman ini', '403', $this->menuActive);
+           return false;
         }
+        // default
+        return true;
     }
 
     /*
@@ -77,19 +79,20 @@ trait AuthPageTrait
                 'message' => $message
             ];
         } else {
-            $this->setForbiddenAccess($default_error_url, $code, $menuID);
+            $this->setForbiddenAccess($default_error_url, $code, $menuID, $message);
         }
     }
 
     /*
      * set forbidden data
      */
-    public function setForbiddenAccess($url,$code, $menuID)
+    public function setForbiddenAccess($url,$code, $menuID, $message)
     {
         $this->isAccess = false;
         $this->errorCode = $code;
         $this->errorUrl = $url;
         $this->errorMenu = $menuID;
+        $this->errorMessage = $message;
     }
 
 }

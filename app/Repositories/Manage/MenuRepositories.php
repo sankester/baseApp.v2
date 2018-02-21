@@ -80,18 +80,30 @@ class MenuRepositories extends BaseRepositories
         // get list menu
         $listMenu  = $this->getWhereMultiple(['portal_id',$portalID],['parent_id', $parentID]);
         if (!empty($listMenu)) {
+            $default_menu  = [];
             foreach ($listMenu as $key => $menu) {
+                if(session()->get('role_active')->role_prioritas > 2){
+                    $scopePermission       = $menu->permission()->whereHas('role' , function($query){
+                        $query->where('id', session()->get('role_active')->id);
+                    })->get();
+                    if( $scopePermission->isEmpty() && $menu->menu_url != '#'){
+                        continue;
+                    }
+                }else{
+                    $scopePermission       = $menu->permission()->get();
+                }
+
                 // set title
                 $menu->menu_title = $indent . $menu->menu_title;
-                $menu = $menu->load('permission');
+                $default_menu[] = [$menu->menu_url =>     $menu->menu_title];
                 $returnMenu .= '<tr><td><div class="checkbox">';
                 // cek apakah ada permission
-                if(! $menu->permission->isEmpty() ){
+                if(! $scopePermission->isEmpty() ){
                     $returnMenu .= '<input  type="checkbox" id="all-'.$menu->id.'" class="chk-col-green r-menu checked-all " value="'.$menu->id.'">';
                     $returnMenu .= '<label for="all-'.$menu->id.'"></label>';
                 }
                 $returnMenu .= '</div></td><td>'.$menu->menu_title.'</td><td><div class="checkbox">';
-                foreach ($menu->permission as $access){
+                foreach ($scopePermission as $access){
                     $checked = '';
                     if(! is_null($activePermission)){
                         foreach ($activePermission as $active) {
@@ -100,8 +112,8 @@ class MenuRepositories extends BaseRepositories
                             }
                         }
                     }
-                    $returnMenu .= '<input name="permission_id[]" type="checkbox" id="p-'.$access->id.'" class="chk-col-green r-'.$menu->id.' r-menu ml-10" value="'.$access->id.'"'.$checked.'>';
-                    $returnMenu .= '<label for="p-'.$access->id.'" class="mr-10">'.$access->permission_nm.'</label>';
+                    $returnMenu .= '<input name="permission_id[]" type="checkbox" id="p-'.$access->id.'-'.$menu->id.'" class="chk-col-green permission-role multi-role-p-'.$access->id.' r-'.$menu->id.' r-menu ml-10" value="'.$access->id.'"'.$checked.'>';
+                    $returnMenu .= '<label for="p-'.$access->id.'-'.$menu->id.'" class="mr-10">'.$access->permission_nm.'</label>';
                 }
                 $returnMenu .= '</div></td></tr>';
                 //get child
@@ -187,18 +199,57 @@ class MenuRepositories extends BaseRepositories
         return $navViews;
     }
 
+    // ambil data menu berdasarkan portal array
+    public function getMenuByPortalRole($portalId, $parentId, $indent, $navViews = array())
+    {
+        $portal = Portal::findOrFail($portalId);
+        $listMenu = $portal->menu()->where('parent_id', $parentId)->orderBy('menu_nomer', 'asc')->get();
+        if ($listMenu->isNotEmpty()) {
+            foreach ($listMenu as $key => $menu) {
+                // get permission
+                $permission = $menu->permission()->whereHas('role', function ($query){
+                    $query->where('id', session()->get('role_active')->id);
+                })->get();
+                // cek permission
+                if($permission->isEmpty() && $menu->menu_url != '#'){
+                    continue;
+                }
+                $menu = $menu->toArray();
+                $menu['menu_title'] = $indent . $menu['menu_title'];
+                $childs = $portal->menu()->where('parent_id', $menu['id'])->get()->toArray();
+                $navViews[] = $menu;
+                if (!empty($childs)) {
+                    $indentChils = $indent . "--- ";
+                    $navViews = $this->getMenuByPortalRole($menu['portal_id'], $menu['id'], $indentChils, $navViews);
+                }
+            }
+        }
+
+        return $navViews;
+    }
+
     // get menu select box
     public function getMenuSelectByPortal($portalId, $parentId, $indent, $index = 'id', $navViews = array())
     {
         $portal = Portal::findOrFail($portalId);
-        $navs = $portal->menu()->where('parent_id', $parentId)->orderBy('menu_nomer', 'asc')->get()->toArray();
-        if (!empty($navs)) {
-            foreach ($navs as $key => $nav) {
-                $childs = $portal->menu()->where('parent_id', $nav['id'])->get()->toArray();
-                $navViews[$nav[$index]] = $indent . $nav['menu_title'];;
+        $listMenu = $portal->menu()->where('parent_id', $parentId)->orderBy('menu_nomer', 'asc')->get();
+        if (!empty($listMenu)) {
+            foreach ($listMenu as $key => $menu) {
+                if(session()->get('role_active')->role_prioritas > 2){
+                    // get permission
+                    $permission = $menu->permission()->whereHas('role', function ($query){
+                        $query->where('id', session()->get('role_active')->id);
+                    })->get();
+                    // cek permission
+                    if($permission->isEmpty() && $menu->menu_url != '#'){
+                        continue;
+                    }
+                }
+                $childs = $portal->menu()->where('parent_id', $menu['id'])->get()->toArray();
+                $navViews[$menu[$index]] = $indent . $menu['menu_title'];;
                 if (!empty($childs)) {
                     $indentChilds = $indent . "--- ";
-                    $navViews =  $this->getMenuSelectByPortal($nav['portal_id'], $nav['id'], $indentChilds, $index , $navViews);
+                    $navViews =  $this->getMenuSelectByPortal($menu['portal_id'], $menu['id'], $indentChilds, $index , $navViews);
                 }
             }
         }
@@ -221,9 +272,11 @@ class MenuRepositories extends BaseRepositories
             // set default menu group
             $menuGroup = '';
             foreach ($listMenu as $menu) {
-                // continue is not access
-                if($this->cekFullAccessMenu($menu->permission) == false){
-                    continue;
+                if($menu->menu_url != '#'){
+                    // continue is not access
+                    if($this->cekFullAccessMenu($menu->permission) == false){
+                        continue;
+                    }
                 }
                 // if access
                 $selected = ($menu->id == $activeID) ? "class='active'" : "";
@@ -235,6 +288,7 @@ class MenuRepositories extends BaseRepositories
                 $str_child_html = $this->getChildMenu($menu->id, $activeID);
                 // cek is access child
                 if(! $this->isAccessChild()){
+                    $this->setAccessChild(true);
                     continue;
                 }
                 if(!empty($menu->menu_group) && $menu->menu_group != $menuGroup){
@@ -402,13 +456,18 @@ class MenuRepositories extends BaseRepositories
 
     // cek full access menu
     private function cekFullAccessMenu($listPermission){
+        $access= 0;
         // cek permission
         foreach ($listPermission as $menuPermission) {
-            if(! in_array($menuPermission->id, $this->permissionRole)){
-                return false;
+            if(in_array($menuPermission->id, $this->permissionRole)){
+                $access += 1;
             }
         }
-        // default retunr
+        // cek
+        if($access == 0) {
+            return false;
+        }
+        // default
         return true;
     }
 }

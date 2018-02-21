@@ -17,10 +17,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         // hook navigation base app
-        view()->composer('layouts.base.sidebar', function($view){
-            $menu = new MenuRepositories();
-            $view->with('menu', $menu);
-        });
+//        view()->composer('layouts.base.sidebar', function($view){
+//            $menu = new MenuRepositories();
+//            $view->with('menu', $menu);
+//        });
     }
 
     /**

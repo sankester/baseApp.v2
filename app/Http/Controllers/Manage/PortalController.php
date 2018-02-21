@@ -113,10 +113,13 @@ class PortalController extends BaseAdminController
     // detail portal
     public function show(Request $request, $portalID)
     {
-        // set permission
-        $this->setPermission('read-portal');
         // cek apakah ajax request
         if ($request->ajax()) {
+            // set permission
+            $access =  $this->setPermission('read-portal');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // get data
             $portal = $this->repositories->getByID($portalID);
             if(! $portal){
@@ -188,10 +191,15 @@ class PortalController extends BaseAdminController
      * Remove the specified resource from storage.
      */
     public function destroy($portalId, PortalRequest $request)
-    {      // set permission
-        $this->setPermission('delete-portal');
+    {
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
+            $access =   $this->setPermission('delete-portal');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
+            // get nama portal
             $portalName = $this->repositories->getByID($portalId)->portal_nm;
             // proses hapus portal dari database
             if($this->repositories->delete($portalId)){

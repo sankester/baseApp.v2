@@ -27,7 +27,7 @@ class ForbiddenAccess extends BaseAdminController
             case 403 :
                 $data = [
                     'code' => $code,
-                    'message' => '<b>Maaf,</b> anda tidak mempunyai akses penuh ke halaman <b>'.Str::lower($menu->menu_title).'</b>.'
+                    'message' => '<b>Maaf,</b> anda tidak mempunyai akses penuh ke halaman '. (isset($menu) ? '<b>'.Str::lower($menu->menu_title).'</b>' : 'ini').'.'
                 ];
                 break;
             case 404:

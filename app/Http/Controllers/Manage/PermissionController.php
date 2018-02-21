@@ -138,7 +138,7 @@ class PermissionController extends BaseAdminController
                     // set params
                     $slug         = strtolower($x) . '-' . strtolower($request->resource);
                     $permission_nm = ucwords($x . " " . $request->resource);
-                    $description  = "Memperbolkehkan usern untuk " . strtoupper($x) . ' ' . ucwords($request->resource);
+                    $description  = "Memperbolehkan user untuk " . strtoupper($x) . ' ' . ucwords($request->resource);
                     $params = [
                         'portal_id' => $request->portal_id,
                         'permission_nm' => $permission_nm,
@@ -234,10 +234,14 @@ class PermissionController extends BaseAdminController
     // proses hapus
     public function destroy($permissionId, PermissionRequest $request)
     {
-        // set permission
-        $this->setPermission('delete-permission');
+
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
+            $access =   $this->setPermission('delete-permission');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // get nama permission
             $permissionName = $this->repositories->getByID($permissionId)->permission_nm;
             // proses hapus permission dari database

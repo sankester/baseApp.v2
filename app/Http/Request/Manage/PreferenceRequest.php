@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Manage;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\JsonResponse;
 
 class PreferenceRequest extends FormRequest
 {
@@ -22,7 +23,8 @@ class PreferenceRequest extends FormRequest
      * @return array
      */
     public function rules()
-    { // set default rules
+    {
+        // set default rules
         $rules = [];
         // cek method
         switch($this->method())
@@ -32,9 +34,9 @@ class PreferenceRequest extends FormRequest
             case 'PATCH':
             {
                 $rules = [
-                    'pref_group' =>  'required|min:3|max:100',
-                    'pref_name' =>  'required|min:3|max:100',
-                    'pref_value' =>  'required|min:3|max:191',
+                    'pref_group'     =>  'required|min:1|max:100',
+                    'pref_name'    =>  'required|min:1|max:100',
+                    'pref_value'     =>  'required|min:1|max:100',
                 ];
                 break;
             }
@@ -51,21 +53,18 @@ class PreferenceRequest extends FormRequest
     public function messages()
     {
         return [
-            'required'    => ':attribute harus di isi .',
-            'same'    => ':attribute and :other harus sama .',
-            'min'    => 'panjang :attribute minimal :min .',
-            'max'    => 'panjang :attribute maksimal :min .',
-            'unique'  => ':attribute telah digunakan.',
+            'required'  => ':attribute harus di isi .',
+            'same'      => ':attribute and :other harus sama .',
+            'min'       => 'panjang :attribute minimal :min .',
+            'max'       => 'panjang :attribute maksimal :min .',
+            'unique'    => ':attribute telah digunakan.',
         ];
     }
 
     public function response(array $errors){
-        // set notification error
-        flash($this->getErrorNotification())->error();
         if ($this->expectsJson()) {
             return new JsonResponse($errors, 422);
         }
-
         return $this->redirector->to($this->getRedirectUrl())
             ->withInput($this->except($this->dontFlash))
             ->withErrors($errors, $this->errorBag);

@@ -129,3 +129,13 @@ label.middle-label  {
     text-align: center;
     position: inherit;
 }
+
+/*time line*/
+.nav-tabs-custom>.nav-tabs>li a.active {
+    border-top-color: #06d79c;
+}
+
+.bg-timeline {
+    background-color: #06d79c !important;
+    color: #fff;
+}

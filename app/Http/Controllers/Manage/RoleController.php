@@ -105,7 +105,7 @@ class RoleController extends BaseAdminController
         $this->page->setTitle('Tambah Role');
         // get data
         $listPortal   = $portalRepositories->getAll();
-        $listMenu   = $menuRepositories->getMenuByPortal($listPortal->first()->id, 0,'');
+        $listMenu   = $menuRepositories->getMenuByPortalRole($listPortal->first()->id, 0,'');
         $listCollection = collect($listMenu)->pluck('menu_title','menu_url');
         // assign data
         $this->assign('listPortal' , $listPortal->pluck('portal_nm', 'id'));
@@ -156,10 +156,13 @@ class RoleController extends BaseAdminController
 
     public function show(Request $request, $roleID)
     {
-        // set permission
-        $this->setPermission('read-role');
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
+            $access =  $this->setPermission('read-role');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // get data
             $role       = $this->repositories->getByID($roleID)->load('permission');
             // cek data param
@@ -209,6 +212,13 @@ class RoleController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-role');
+        // cek role prioritas
+        if($this->repositories->cekRolePrioritas($roleId) == false){
+            // set error page
+            $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
+            // load view
+            return $this->displayPage();
+        }
         // set page template
         $this->setTemplate('manage.role.edit');
         // load js
@@ -221,7 +231,7 @@ class RoleController extends BaseAdminController
         // get data
         $role       = $this->repositories->getByID($roleId)->load('permission');
         $listPortal = $portalRepositories->getAll();
-        $listMenu   = $menuRepositories->getMenuByPortal($listPortal->first()->id, 0,'');
+        $listMenu   = $menuRepositories->getMenuByPortalRole($listPortal->first()->id, 0,'');
         $listCollection = collect($listMenu)->pluck('menu_title','menu_url');
         // assign data
         $this->assign('role' ,$role);
@@ -237,6 +247,13 @@ class RoleController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-role');
+        // cek role prioritas
+        if($this->repositories->cekRolePrioritas($roleId) == false){
+            // set error page
+            $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
+            // load view
+            return $this->displayPage();
+        }
         // proses tambah role ke database
         if($this->repositories->update($request, $roleId)){
             // save log
@@ -254,10 +271,20 @@ class RoleController extends BaseAdminController
     // proses delete role
     public function destroy(Request $request, $roleId)
     {
-        // set permission
-        $this->setPermission('delete-role');
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
+            $access =   $this->setPermission('delete-role');
+            // cek role prioritas
+            if($this->repositories->cekRolePrioritas($roleId) == false){
+                // set error page
+                $this->setErrorAccess('',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
+                // load view
+                return $this->displayPage();
+            }
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // get role name
             $roleName = $this->repositories->getByID($roleId)->role_nm;
             // proses hapus role dari database

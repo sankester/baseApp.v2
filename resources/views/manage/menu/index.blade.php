@@ -40,6 +40,7 @@
                                 <p class="box-text text-left">{{ $portal->site_desc }}</p>
                                 <div class="fx-overlay scrl-up">
                                     <ul class="fx-info">
+                                        <li><a class="btn default btn-outline image-popup-vertical-fit" href="{{ route('manage.menu.create', $portal->id ) }}"><i class="mdi mdi-plus"></i></a></li>
                                         <li><a class="btn default btn-outline image-popup-vertical-fit" href="{{ route('manage.menu.show', $portal->id ) }}"><i class="mdi mdi-eye"></i></a></li>
                                     </ul>
                                 </div>

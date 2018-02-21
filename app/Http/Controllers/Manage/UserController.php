@@ -139,10 +139,17 @@ class UserController extends BaseAdminController
     }
 
     // show add form
-    public function edit(PortalRepositories $portalRepositories, $userID)
+    public function edit(PortalRepositories $portalRepositories, $userID, Request $request)
     {
         // set permission
         $this->setPermission('update-user');
+        // cek role prioritas
+        if($this->repositories->cekRolePrioritas($userID) == false){
+            // set error page
+            $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
+            // load view
+            return $this->displayPage();
+        }
         // set page template
         $this->setTemplate('manage.user.edit');
         // load js
@@ -181,7 +188,7 @@ class UserController extends BaseAdminController
         // proses tambah user ke database
         if($this->repositories->update($request, $userID)){
             // save log
-            LogRepository::addLog('update', 'Merubad data user '.$request->nama_lengkap);
+            LogRepository::addLog('update', 'Merubah data user '.$request->nama_lengkap);
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil ubah user.']);
         }else{
@@ -195,10 +202,13 @@ class UserController extends BaseAdminController
     // ambil detail user
     public function show(Request $request, PortalRepositories $portalRepositories, $userID)
     {
-        // set permission
-        $this->setPermission('read-user');
         // cek apakah ajax request
         if ($request->ajax()) {
+            // set permission
+            $access =  $this->setPermission('read-user');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // get data
             $user = $this->repositories->getByID($userID);
             if(! $user){
@@ -268,10 +278,18 @@ class UserController extends BaseAdminController
     // proses delete user
     public function destroy(Request $request, $userID)
     {
-        // set permission
-        $this->setPermission('delete-user');
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
+            $access =    $this->setPermission('delete-user');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
+            // cek role prioritas
+            if($this->repositories->cekRolePrioritas($userID) == false){
+                // set error page
+                $this->setErrorAccess('',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
+            }
             // get user nama
             $user = $this->repositories->getByID($userID)->with('userData');
             // proses hapus user dari database

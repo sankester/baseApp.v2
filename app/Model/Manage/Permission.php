@@ -26,7 +26,14 @@ class Permission extends Model
                     ->withPivot('menu_id');
     }
 
+    // set relation portal
     public function portal(){
         return $this->belongsTo('App\Model\Manage\Portal');
+    }
+
+    // set relation role
+    public function role()
+    {
+        return $this->belongsToMany('App\Model\Manage\Role', 'role_permission', 'permission_id', '');
     }
 }

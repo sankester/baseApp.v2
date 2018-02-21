@@ -8,6 +8,7 @@ use App\Libs\LogLib\LogRepository;
 use App\Libs\LogLib\Model\Log;
 use App\Repositories\Manage\MenuRepositories;
 use App\Repositories\Manage\PortalRepositories;
+use App\Repositories\Manage\UserRepositories;
 use Illuminate\Http\Request;
 
 // class name
@@ -69,7 +70,7 @@ class MenuController extends BaseAdminController
         // set page template
         $this->setTemplate('manage.menu.add');
         // load css
-        $this->loadCss('https://fonts.googleapis.com/icon?family=Mat    erial+Icons', true);
+        $this->loadCss('https://fonts.googleapis.com/icon?family=Material+Icons', true);
         // load js
         $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
         $this->loadJs('themes/base/assets/vendor_components/select2/dist/js/select2.full.min.js');
@@ -100,7 +101,7 @@ class MenuController extends BaseAdminController
         // proses tambah menu ke database
         if($this->repositories->create($request)){
             // save log
-            LogRepository::addLog('create', 'Menambahkan menu '. $request->menu_nm);
+            LogRepository::addLog('insert', 'Menambahkan menu '. $request->menu_nm);
             // set success notification
             $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah role.']);
         }else{
@@ -112,16 +113,18 @@ class MenuController extends BaseAdminController
     }
 
     // tampilkan detail menu by menu
-    public function show(PortalRepositories $portalRepositories, $portalId)
+    public function show(UserRepositories  $userRepositories,PortalRepositories $portalRepositories, $portalId)
     {
         // set permission
         $this->setPermission('update-menu');
         // set page template
         $this->setTemplate('manage.menu.detail');
         // load js
-        $this->loadJs('themes/general/Nestable2-master/jquery.nestable.min.js');
-        $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
+        if($userRepositories->cekRolePrioritas($this->repositories->getAuth()->id) == 'true'){
+            $this->loadJs('themes/general/Nestable2-master/jquery.nestable.min.js');
+        }
         $this->loadJs('js/base/manage/menu/detail.js');
+        $this->loadJs('themes/base/assets/vendor_components/sweetalert/sweetalert.min.js');
         // get data
         $portal = $portalRepositories->getByID($portalId);
         // set page title
@@ -138,10 +141,13 @@ class MenuController extends BaseAdminController
     // get detail menu
     public function detail(Request $request,$menuID)
     {
-        // set permission
-        $this->setPermission('read-menu');
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
+            $access =  $this->setPermission('read-menu');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // get data
             $menu       = $this->repositories->getByID($menuID)->load('permission');
             // cek data param
@@ -265,10 +271,12 @@ class MenuController extends BaseAdminController
     // proses ajax hapus
     public function destroy(Request $request, $menuId)
     {
-        // set permission
-        $this->setPermission('delete-menu');
         // cek apakah ajax request
         if ($request->ajax()){
+            $access =      $this->setPermission('delete-menu');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // get nama menu
             $namaMenu = $this->repositories->getByID($menuId)->menu_nm;
             // proses hapus menu dari database
@@ -286,10 +294,13 @@ class MenuController extends BaseAdminController
     // getlist menu by menu
     public function getListMenu(Request $request)
     {
-        // set permission
-        $this->setPermission('read-menu');
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
+            $access =  $this->setPermission('read-menu');
+            if($access['access'] == 'failed'){
+                return response(['message' => $access['message'], 'status' => 'failed']);
+            }
             // cek data param
             if(!$request->has('portal_id') || empty($request->portal_id)){
                 return response()->json(['message' => 'Portal ID harus diisi', 'status' => 'failed']);
