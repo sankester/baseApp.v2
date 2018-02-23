@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     {{--include notification--}}
-                    @include('layouts.notification.base_notification')
+                    @include('layouts.notification.default')
                     {{--end include notification--}}
                     <!-- form start -->
                     {!! Form::model($portal = new \App\Model\Manage\Portal(),['route' => 'manage.portal.store', 'class' => 'form-horizontal form-element','enctype'=>"multipart/form-data", 'id' => 'tambah-portal']) !!}

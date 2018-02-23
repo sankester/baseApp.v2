@@ -80,9 +80,10 @@ class PreferenceController extends BaseAdminController
             // save log
             LogRepository::addLog('insert', 'Menambahkan preference dangan nama : '.$request->pref_name);
             // set success notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah preference.']);
+            $this->setNotification('Berhasil menambah preference.')->success();
         }else{
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah preference.']);
+            // set error nitification
+            $this->setNotification('Gagal menambah preference')->danger();
         }
         // redirect page
         return redirect()->route('manage.preference.create');
@@ -102,6 +103,13 @@ class PreferenceController extends BaseAdminController
         $this->loadJs('themes/base/assets/vendor_components/jquery-validation-1.17.0/dist/jquery.validate.js');
         //set page title
         $this->page->setTitle('Edit Preference');
+        // cek data
+        if(! $this->repositories->isExist($preferenceID)){
+            // set notification
+            $this->setNotification('Preference tidak ditemukan');
+            // response
+            return response()->route('manage.preference.index');
+        }
         // assign data
         $this->assign('preference', $this->repositories->getByID($preferenceID));
         // display page
@@ -115,15 +123,22 @@ class PreferenceController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-preference');
+        // cek data
+        if(! $this->repositories->isExist($preferenceID)){
+            // set notification
+            $this->setNotification('Preference tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.preference.index');
+        }
         // proses update data preference di database
         if($this->repositories->update($request, $preferenceID)){
             // save log
             LogRepository::addLog('update', 'Merubah data preference '.$request->pref_name);
             // set notifikasi success
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil ubah preference.']);
+            $this->setNotification('Berhasil mengubah data preference')->success();
         }else{
             // set notifikasi error
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal ubah preference.']);
+            $this->setNotification("Gagal mengubah data preference")->danger();
         }
         // redirect page
         return redirect()->route('manage.preference.edit', $preferenceID);
@@ -140,6 +155,10 @@ class PreferenceController extends BaseAdminController
             $access =   $this->setPermission('delete-preference');
             if($access['access'] == 'failed'){
                 return response(['message' => $access['message'], 'status' => 'failed']);
+            }
+            // cek data
+            if(! $this->repositories->isExist($preferenceID)){
+                return response()->json(['message' => 'Preference tidak ditemukan', 'status'=> 'failed']);
             }
             // get nama preference
             $prefName = $this->repositories->getByID($preferenceID)->portal_name;

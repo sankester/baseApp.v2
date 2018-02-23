@@ -20,6 +20,9 @@
                 </h3>
             </div>
         </div>
+        {{--include notification--}}
+        @include('layouts.notification.base_notification')
+        {{--end include notification--}}
         @if(empty($portals))
             <div class="error-page empty-data">
                 <div class="error-content">

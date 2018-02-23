@@ -125,10 +125,10 @@ class RoleController extends BaseAdminController
             // save log
             LogRepository::addLog('insert', 'Menambahkan role '.$request->role_nm);
             // set success notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah role.']);
+            $this->setNotification('Berhasil menambah role.')->success();
         }else{
             // set error notification
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah role.']);
+            $this->setNotification('Gagam menambah role')->danger();
         }
         // redirect page
         return redirect()->route('manage.role.create');
@@ -212,13 +212,6 @@ class RoleController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-role');
-        // cek role prioritas
-        if($this->repositories->cekRolePrioritas($roleId) == false){
-            // set error page
-            $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
-            // load view
-            return $this->displayPage();
-        }
         // set page template
         $this->setTemplate('manage.role.edit');
         // load js
@@ -228,6 +221,20 @@ class RoleController extends BaseAdminController
         $this->loadJs('js/base/manage/role/crud.js');
         // set page title
         $this->page->setTitle('Edit Role');
+        // cek data
+        if(! $this->repositories->isExist($roleId)){
+            // set notification
+            $this->setNotification('Role tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.route.index');
+        }
+        // cek role prioritas
+        if($this->repositories->cekRolePrioritas($roleId) == false){
+            // set error page
+            $this->setErrorAccess('base/forbidden/page/',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
+            // load view
+            return $this->displayPage();
+        }
         // get data
         $role       = $this->repositories->getByID($roleId)->load('permission');
         $listPortal = $portalRepositories->getAll();
@@ -247,6 +254,13 @@ class RoleController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-role');
+        // cek data
+        if(! $this->repositories->isExist($roleId)){
+            // set notifikasi
+            $this->setNotification('Role tidak diteemukan')->danger();
+            // redirect
+            return redirect()->route('manage.role.index');
+        }
         // cek role prioritas
         if($this->repositories->cekRolePrioritas($roleId) == false){
             // set error page
@@ -259,10 +273,10 @@ class RoleController extends BaseAdminController
             // save log
             LogRepository::addLog('update', 'Mengupdate role '.$request->role_nm);
             // set success notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil ubah role.']);
+            $this->setNotification('Berhasil mengubah data role')->success();
         }else{
             // set error notification
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal ubah role.']);
+            $this->setNotification('Gagal mengubah data role')->danger();
         }
         // redirect page
         return redirect()->route('manage.role.edit', $roleId);
@@ -275,15 +289,18 @@ class RoleController extends BaseAdminController
         if ($request->ajax()){
             // set permission
             $access =   $this->setPermission('delete-role');
-            // cek role prioritas
-            if($this->repositories->cekRolePrioritas($roleId) == false){
-                // set error page
-                $this->setErrorAccess('',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
-                // load view
-                return $this->displayPage();
-            }
             if($access['access'] == 'failed'){
                 return response(['message' => $access['message'], 'status' => 'failed']);
+            }
+            // cek data
+            if(! $this->repositories->isExist($roleId)){
+                // set error page
+                return response(['message' => 'Role tidak ditemukan.', 'status' => 'failed']);
+            }
+            // cek role prioritas
+            if(! $this->repositories->cekRolePrioritas($roleId)){
+                // set error page
+                return response(['message' => 'maaf, anda tidak mempunyai akses role yang lebih tinggi.', 'status' => 'failed']);
             }
             // get role name
             $roleName = $this->repositories->getByID($roleId)->role_nm;

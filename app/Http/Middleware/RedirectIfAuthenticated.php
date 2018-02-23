@@ -20,6 +20,10 @@ class RedirectIfAuthenticated
         if (Auth::guard($guard)->check()) {
             // get role active
             $role = $request->session()->get('role_active');
+            if(!isset($role->default_page)){
+                $request->session()->invalidate();
+                return redirect('/login');
+            }
             // set return
             return redirect($role->default_page);
         }

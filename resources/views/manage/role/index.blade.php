@@ -22,6 +22,9 @@
                     </div>
                 </h3>
             </div>
+            {{--include notification--}}
+            @include('layouts.notification.base_notification')
+            {{--end include notification--}}
         </div>
         <div class="row">
             <div class="col-md-12">

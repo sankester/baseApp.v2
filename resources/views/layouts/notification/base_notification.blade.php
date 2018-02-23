@@ -1,28 +1,10 @@
-@if( Session::has('notification'))
+@if( Session::has('app_notification'))
     <div class="col-md-12">
-        @if(Session::get('notification')['status'] ==  'success')
-        <div class="alert alert-success alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            {{ Session::get('notification')['message'] }}
+        <div class="alert alert-{!! Session::get('app_notification')->getType() !!} alert-dismissable">
+            @if(!Session::get('app_notification')->isImportant())
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            @endif
+            {{ Session::get('app_notification')->getMessage() }}
         </div>
-        @endif
-        @if(Session::get('notification')['status'] ==  'info')
-        <div class="alert alert-info alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            {{ Session::get('notification')['message'] }}
-        </div>
-        @endif
-        @if(Session::get('notification')['status'] ==  'warning')
-        <div class="alert alert-warning alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            {{ Session::get('notification')['message'] }}
-        </div>
-        @endif
-        @if(Session::get('notification')['status'] ==  'danger')
-        <div class="alert alert-danger alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            {{ Session::get('notification')['message'] }}
-        </div>
-        @endif
     </div>
 @endif

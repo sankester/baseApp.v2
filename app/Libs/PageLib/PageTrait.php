@@ -9,12 +9,17 @@
 namespace App\Libs\PageLib;
 
 
+use App\Libs\NotifLib\NotificationTrait;
 use Illuminate\Http\Request;
 
 
 trait PageTrait
 {
+    // use auth page trait
     use AuthPageTrait;
+
+    // use notification trait
+    use NotificationTrait;
 
     /**
      * Objec Page
@@ -48,6 +53,7 @@ trait PageTrait
     public function initialPage()
     {
         $this->page = new Page();
+        $this->initializeNotification();
     }
 
     public function setMenuActive($menuID)
@@ -72,6 +78,7 @@ trait PageTrait
      */
     protected function displayPage()
     {
+//        $this->notification->clearNotification();
         if ($this->isAccess == false) {
             return redirect( $this->errorUrl . $this->errorCode . '/' .$this->errorMenu)->with('errorMessage', $this->errorMessage);
         } else {

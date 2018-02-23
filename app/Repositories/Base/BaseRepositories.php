@@ -208,6 +208,15 @@ class BaseRepositories
         }
     }
 
+    // cek apakah data tersedia
+    public function isExist($id)
+    {
+        if(is_null($this->getByID($id))){
+            return false;
+        }
+        return true;
+    }
+
     // upload image
     protected function uploadImage($image, $config)
     {

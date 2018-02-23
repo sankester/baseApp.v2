@@ -126,10 +126,10 @@ class PermissionController extends BaseAdminController
                 // save log
                 LogRepository::addLog('insert', 'Menambahkan basic permission '.$request->permission_nm);
                 // set notifikasi success
-                $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah permission.']);
+               $this->setNotification('Berhasil menambah permission')->success();
             }else{
                 // set notifikasi error
-                $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah permission.']);
+                $this->setNotification('Gagal menambah permission')->danger();
             }
         }else{
             $crud = explode(',', $request->crud_selected);
@@ -158,7 +158,7 @@ class PermissionController extends BaseAdminController
                     // save log
                     LogRepository::addLog('insert','Menambahkan resource permission '.$request->resource);
                     // set notifikasi success
-                    $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah permission.']);
+                    $this->setNotification('Berhasil tambah permission')->success();
                 }
             }
         }
@@ -186,8 +186,14 @@ class PermissionController extends BaseAdminController
         //set page title
         $this->page->setTitle('Edit Permission');
         // cek data
-        $permission = $this->repositories->getByID($permissionId);
+        if(! $this->repositories->isExist($permissionId)){
+            // set notification
+            $this->setNotification('Permission tidak ditemukan.')->danger();
+            // return
+            return redirect()->route('manage.permission.index');
+        }
         // get data
+        $permission = $this->repositories->getByID($permissionId);
         $listGroup = $this->repositories->getGroupAvailible( $permission->portal_id)->toArray();
         $groupOutput  = '';
         foreach ($listGroup as $group) {
@@ -217,15 +223,22 @@ class PermissionController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-permission');
+        // cek data
+        if(! $this->repositories->isExist($permissionId)){
+            // set notification
+            $this->setNotification('Permission tidak ditemukan.')->danger();
+            // return
+            return redirect()->route('manage.permission.index');
+        }
         // proses update
         if($this->repositories->updatePermission($permissionId,$request)){
             // save log
             LogRepository::addLog('update', 'Mengubah data permission '.$request->permission_nm);
             // set notifikasi success
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil edit permission.']);
+            $this->setNotification('Berhasil mengubah data permission')->success();
         }else{
             // set notifikasi error
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal edit permission.']);
+            $this->setNotification('Gagal mengubah data permission')->danger();
         }
         // redirect
         return redirect()->route('manage.permission.edit', $permissionId);
@@ -239,8 +252,13 @@ class PermissionController extends BaseAdminController
         if ($request->ajax()){
             // set permission
             $access =   $this->setPermission('delete-permission');
+            // cek akses
             if($access['access'] == 'failed'){
                 return response(['message' => $access['message'], 'status' => 'failed']);
+            }
+            // cek data
+            if(! $this->repositories->isExist($permissionId)){
+                return response(['message' => 'Permission tidak ditemukan.', 'status' => 'failed']);
             }
             // get nama permission
             $permissionName = $this->repositories->getByID($permissionId)->permission_nm;

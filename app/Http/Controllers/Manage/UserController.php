@@ -129,10 +129,10 @@ class UserController extends BaseAdminController
             // save log
             LogRepository::addLog('insert', 'Menambahakan user ', $request->nama_lengkap);
             // set succes notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah user.']);
+            $this->setNotification('Berhasil menambah user')->success();
         }else{
             // set error message
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah user.']);
+            $this->setNotification('Gagal menambah user')->danger();
         }
         // redirect page
         return redirect()->route('manage.user.create');
@@ -143,6 +143,13 @@ class UserController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-user');
+        // cek data
+        if(! $this->repositories->isExist($userID)){
+            // set notification
+            $this->setNotification('Data user tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.base.user');
+        }
         // cek role prioritas
         if($this->repositories->cekRolePrioritas($userID) == false){
             // set error page
@@ -185,15 +192,22 @@ class UserController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-user');
+        // cek data
+        if(! $this->repositories->isExist($userID)){
+            // set notification
+            $this->setNotification('Data user tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.user.index');
+        }
         // proses tambah user ke database
         if($this->repositories->update($request, $userID)){
             // save log
-            LogRepository::addLog('update', 'Merubah data user '.$request->nama_lengkap);
+            LogRepository::addLog('update', 'Merubah data user.'.$request->nama_lengkap);
             // set success notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil ubah user.']);
+            $this->setNotification('Berhasil mengubah data user')->success();
         }else{
             // set error notification
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal ubah user.']);
+            $this->setNotification('Gagal mengubah data user.')->danger();
         }
         // redirect page
         return redirect()->route('manage.user.edit', $userID);
@@ -285,10 +299,15 @@ class UserController extends BaseAdminController
             if($access['access'] == 'failed'){
                 return response(['message' => $access['message'], 'status' => 'failed']);
             }
+            // cek data
+            if(! $this->repositories->isExist($userID)){
+                // set response
+                return response()->json(['message' => 'Data user tidak ditemukan', 'status' => 'failed']);
+            }
             // cek role prioritas
             if($this->repositories->cekRolePrioritas($userID) == false){
-                // set error page
-                $this->setErrorAccess('',$this->request, 'maaf, anda tidak mempunyai akses role yang lebih tinggi.','403');
+                // return error
+                return response(['message' => 'maaf, anda tidak mempunyai akses role yang lebih tinggi.', 'status' => 'failed']);
             }
             // get user nama
             $user = $this->repositories->getByID($userID)->with('userData');

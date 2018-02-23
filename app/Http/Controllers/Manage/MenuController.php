@@ -103,10 +103,10 @@ class MenuController extends BaseAdminController
             // save log
             LogRepository::addLog('insert', 'Menambahkan menu '. $request->menu_nm);
             // set success notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah role.']);
+            $this->setNotification('Berhasil menambah menu.')->success();
         }else{
             // set error notification
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah role.']);
+            $this->setNotification('Gagal menambah menu.')->danger();
         }
         // redirect page
         return redirect()->route('manage.menu.create', $request->portal_id);
@@ -147,6 +147,10 @@ class MenuController extends BaseAdminController
             $access =  $this->setPermission('read-menu');
             if($access['access'] == 'failed'){
                 return response(['message' => $access['message'], 'status' => 'failed']);
+            }
+            // cek data
+            if(!$this->repositories->isExist($menuID)){
+                return response(['message' => 'Data tidak ditemukan.', 'status' => 'failed']);
             }
             // get data
             $menu       = $this->repositories->getByID($menuID)->load('permission');
@@ -231,6 +235,13 @@ class MenuController extends BaseAdminController
         $this->loadJs('themes/general/jQuery-Autocomplete-master/dist/jquery.autocomplete.min.js');
         // set page title
         $this->page->setTitle('Edit Menu');
+        // cek data
+        if(! $this->repositories->isExist($menuId)){
+            // set notification
+            $this->setNotification('Menu tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.menu.show', $portalId);
+        }
         // get data
         $portal = $portalRepositories->getByID($portalId);
         $menu   = $this->repositories->getByID($menuId);
@@ -254,15 +265,22 @@ class MenuController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-menu');
+        // cek data
+        if(! $this->repositories->isExist($menuId)){
+            // set notification
+            $this->setNotification('Menu tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.menu.index');
+        }
         // proses edit menu ke database
         if($this->repositories->update($request, $menuId)){
             // save log
             LogRepository::addLog('update', 'Mengubah data menu '.$request->menu_nm);
             // set success notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil mengupdate role.']);
+            $this->setNotification('Berhasil mengubah menu')->success();
         }else{
             // set error notification
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal mengupdate role.']);
+            $this->setNotification('Gagal mengubah data')->danger();
         }
         // redirect page
         return redirect()->route('manage.menu.edit', [$request->portal_id, $menuId]);
@@ -273,9 +291,14 @@ class MenuController extends BaseAdminController
     {
         // cek apakah ajax request
         if ($request->ajax()){
+            // set permission
             $access =      $this->setPermission('delete-menu');
             if($access['access'] == 'failed'){
                 return response(['message' => $access['message'], 'status' => 'failed']);
+            }
+            // data
+            if(! $this->repositories->isExist($menuId)){
+                return response()->json(['message' => 'Menu tidak ditemukan', 'status' => 'failed']);
             }
             // get nama menu
             $namaMenu = $this->repositories->getByID($menuId)->menu_nm;

@@ -82,9 +82,9 @@ class PortalController extends BaseAdminController
             // save log
             LogRepository::addLog('insert', 'Menambahkan portal '.$request->portal_nm);
             // set success notification
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
+            $this->setNotification('Berhasil menambah portal.')->success();
         }else{
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah portal.']);
+            $this->setNotification('Gagal menambahkan portal.')->danger();
         }
         // redirect page
         return redirect()->route('manage.portal.create');
@@ -94,10 +94,16 @@ class PortalController extends BaseAdminController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($portalId)
+    public function edit(Request $request, $portalId)
     {
         // set permission
         $this->setPermission('update-portal');
+        // cek data
+        if($this->repositories->isExist($portalId) == false){
+            $this->setNotification('Portal tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.portal.index');
+        }
         // set template
         $this->setTemplate('manage.portal.edit');
         // load js
@@ -120,11 +126,15 @@ class PortalController extends BaseAdminController
             if($access['access'] == 'failed'){
                 return response(['message' => $access['message'], 'status' => 'failed']);
             }
+            // cek data
+            if(! $this->repositories->isExist($portalID)){
+                return response(['message' => 'Portal tidak ditemukan', 'status' => 'failed']);
+            }
             // get data
             $portal = $this->repositories->getByID($portalID);
             if(! $portal){
                 // default response
-                return response(['message' => 'Gagal mengambil data user', 'status' => 'failed']);
+                return response(['message' => 'Data tidak ditemukan', 'status' => 'failed']);
             }
             // set html view
             $title = 'Detail menu '.$portal->portal_nm;
@@ -173,15 +183,21 @@ class PortalController extends BaseAdminController
     {
         // set permission
         $this->setPermission('update-portal');
+        // cek data
+        if(!$this->repositories->isExist($portalId)){
+            $this->setNotification('Portal tidak ditemukan')->danger();
+            // redirect
+            return redirect()->route('manage.portal.index');
+        }
         // proses update data portal di database
         if($this->repositories->update($request, $portalId)){
             // save log
             LogRepository::addLog('update', 'Merubah data portal '.$request->portal_nm);
             // set notifikasi success
-            $request->session()->flash('notification', ['status' => 'success' , 'message' => 'Berhasil tambah portal.']);
+            $this->setNotification('Berhasil mengubah data portal')->success();
         }else{
             // set notifikasi error
-            $request->session()->flash('notification', ['status' => 'error' , 'message' => 'Gagal tambah portal.']);
+            $this->setNotification('Gagal mengubah data portal')->danger();
         }
         // redirect page
         return redirect()->route('manage.portal.edit', $portalId);
@@ -200,11 +216,15 @@ class PortalController extends BaseAdminController
                 return response(['message' => $access['message'], 'status' => 'failed']);
             }
             // get nama portal
-            $portalName = $this->repositories->getByID($portalId)->portal_nm;
+            $portal = $this->repositories->getByID($portalId);
+            if(! $portal){
+                // default response
+                return response(['message' => 'Portal tidak ditemukan', 'status' => 'failed']);
+            }
             // proses hapus portal dari database
             if($this->repositories->delete($portalId)){
                 // save log
-                LogRepository::addLog('delete','Menghapus portal'.$portalName);
+                LogRepository::addLog('delete','Menghapus portal'.$portal->portal_nm);
                 // set response
                 return response(['message' => 'Berhasil menghapus portal.', 'status' => 'success']);
             }

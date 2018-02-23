@@ -23,6 +23,9 @@
                     </div>
                 </h3>
             </div>
+            {{--include notification--}}
+            @include('layouts.notification.base_notification')
+            {{--end include notification--}}
             @if(empty($htmlMenu))
                 <div class="col-md-12">
                     <div class="error-page empty-data">

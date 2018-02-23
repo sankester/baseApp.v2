@@ -26,6 +26,7 @@ class BaseAdminController extends Controller
     {
         $this->request = $request;
         $this->middleware('auth');
+        $this->middleware('has_role');
         $this->initialPage();
         $this->setDefaultCss();
         $this->setDefaultJs();

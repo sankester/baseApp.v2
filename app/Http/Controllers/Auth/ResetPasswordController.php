@@ -86,7 +86,7 @@ class ResetPasswordController extends Controller
         $this->guard()->login($user);
 
         // get list role user
-        $listRole = $user->role()->where('portal_id', $this->ge tPortal())->get();
+        $listRole = $user->role()->where('portal_id', $this->getPortal())->get();
         // cek role apakah bisa mengakses portal
         $roleAccess = $this->cek_portal($listRole);
         // cek role akses
