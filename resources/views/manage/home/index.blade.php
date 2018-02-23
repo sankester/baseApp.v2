@@ -18,7 +18,7 @@
                 <span class="info-box-icon bg-teal"><i class="ion ion-person-stalker"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-number"> {{ isset($countUser) ? $countUser : 0}}</span>
                     <span class="info-box-text">User</span>
                 </div>
                 <!-- /.info-box-content -->
@@ -30,7 +30,7 @@
                 <span class="info-box-icon bg-info"><i class="ion ion-ios-people"></i></span>
 
                 <div class="info-box-content">
-                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-number">{{ isset($countRole) ? $countRole : 0}}</span>
                     <span class="info-box-text">Role</span>
                 </div>
                 <!-- /.info-box-content -->
@@ -41,7 +41,7 @@
             <div class="info-box">
                 <span class="info-box-icon bg-red"><i class="ion ion-key"></i></span>
                 <div class="info-box-content">
-                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-number">{{ isset($countPermission) ? $countPermission : 0}}</span>
                     <span class="info-box-text">Permission</span>
                 </div>
                 <!-- /.info-box-content -->
@@ -54,7 +54,7 @@
                     <i class="ion ion-grid"></i>
                 </span>
                 <div class="info-box-content">
-                    <span class="info-box-number">2,000</span>
+                    <span class="info-box-number">{{ isset($countMenu) ?   $countMenu: 0}}</span>
                     <span class="info-box-text">Menu</span>
                 </div>
                 <!-- /.info-box-content -->

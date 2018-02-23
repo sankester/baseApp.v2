@@ -26,6 +26,14 @@ class UserRepositories extends BaseRepositories
         return UserData::select('jabatan')->groupBy('jabatan')->get();
     }
 
+    // get count user
+    public function getCountUser()
+    {
+        return $this->getModel()->whereHas('role', function ($query){
+            $query ->where('role_prioritas' ,'>=', session()->get('role_active')->role_prioritas);;
+        })->count();
+    }
+
     // cek role prioritas
     public function cekRolePrioritas($userID)
     {

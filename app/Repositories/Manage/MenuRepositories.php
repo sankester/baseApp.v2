@@ -56,6 +56,14 @@ class MenuRepositories extends BaseRepositories
         $this->isAccessChild = $isAccessChild;
     }
 
+    // get count menu
+    public function getCountMenu()
+    {
+        return $this->getModel()->whereHas('permission.role', function ($query){
+            $query ->where('role_prioritas' ,'>=', session()->get('role_active')->role_prioritas);;
+        })->count();
+    }
+
     // ambil data menu berdasarkan portal format object
     public function getDataMenuByPortal($portalID, $parentID, $returnMenu = [], $indent = '')
     {

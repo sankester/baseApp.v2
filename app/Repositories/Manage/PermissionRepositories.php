@@ -26,6 +26,14 @@ class PermissionRepositories extends BaseRepositories
         return $this->getModel()->select('permission_group')->where('portal_id', $portalId)->groupBy('permission_group')->get();
     }
 
+    // get count permission
+    public function getCountPermission()
+    {
+        return $this->getModel()->whereHas('role', function($query){
+            $query ->where('role_prioritas' ,'>=', session()->get('role_active')->role_prioritas);;
+        })->count();
+    }
+
     // proses insert
     public function createPermission($params)
     {
